@@ -580,10 +580,20 @@ const FAODExport = {
    * Генерация памятки для родителей
    */
   generateParentMemo(result) {
-    const p = result.patient;
-    const d = result.diagnosisInfo;
-    const f = result.feeding;
-    const emergency = result.emergency;
+    const p = result.patient || {};
+    const d = result.diagnosisInfo || {};
+    const f = result.feeding || {};
+    const emergency = result.emergency || {};
+
+    // Защита от undefined
+    const ageDisplay = p.ageDisplay || 'возраст не указан';
+    const weight = p.weight || '?';
+    const fullName = d.fullName || d.name || 'диагноз не указан';
+    const dayInterval = f.dayIntervalHours || 4;
+    const nightInterval = f.nightIntervalHours || 8;
+    const glucoseConc = emergency.glucoseConcentration || '15-20%';
+    const rateML = emergency.rateMLPerHour || 50;
+    const mctContra = d.mctContraindicated || false;
 
     return `
 <!DOCTYPE html>
@@ -662,16 +672,16 @@ const FAODExport = {
   <h1>ЭКСТРЕННАЯ ПАМЯТКА</h1>
 
   <div class="patient-info">
-    <strong>Пациент:</strong> ${p.ageDisplay}, ${p.weight} кг<br>
-    <strong>Диагноз:</strong> ${d.fullName}<br>
+    <strong>Пациент:</strong> ${ageDisplay}, ${weight} кг<br>
+    <strong>Диагноз:</strong> ${fullName}<br>
     <strong>Дата:</strong> ${FAODUtils.formatDate(new Date(), 'long')}
   </div>
 
   <h2>Режим кормления</h2>
   <div class="warning-box">
     <p>Максимальный перерыв между кормлениями:</p>
-    <p>Днём: <span class="big-number">${f.dayIntervalHours} часа</span></p>
-    <p>Ночью: <span class="big-number">${f.nightIntervalHours} часов</span></p>
+    <p>Днём: <span class="big-number">${dayInterval} часа</span></p>
+    <p>Ночью: <span class="big-number">${nightInterval} часов</span></p>
     <p><strong>НЕЛЬЗЯ пропускать кормления!</strong></p>
   </div>
 
@@ -692,13 +702,13 @@ const FAODExport = {
   <div class="info-box">
     <ol>
       <li>Давайте углеводы каждые 2-3 часа</li>
-      <li>Раствор глюкозы ${emergency.glucoseConcentration}</li>
-      <li>По ${Math.round(emergency.rateMLPerHour * 2)} мл каждые 2 часа</li>
+      <li>Раствор глюкозы ${glucoseConc}</li>
+      <li>По ${Math.round(rateML * 2)} мл каждые 2 часа</li>
       <li>Если рвота — сразу в больницу!</li>
     </ol>
   </div>
 
-  ${d.mctContraindicated ? `
+  ${mctContra ? `
   <h2>ЗАПРЕЩЁННЫЕ ПРОДУКТЫ</h2>
   <div class="danger-box">
     <p><strong>НЕЛЬЗЯ давать:</strong></p>
@@ -731,7 +741,8 @@ const FAODExport = {
   exportParentMemo(result) {
     const html = this.generateParentMemo(result);
     const blob = new Blob([html], { type: 'application/msword' });
-    const filename = `Памятка_FAOD_${result.patient.diagnosis}_${new Date().toISOString().split('T')[0]}.doc`;
+    const diagnosis = result.patient?.diagnosis || 'FAOD';
+    const filename = `Памятка_FAOD_${diagnosis}_${new Date().toISOString().split('T')[0]}.doc`;
     this.downloadBlob(blob, filename);
   }
 };
@@ -761,5 +772,10 @@ function exportParentMemo() {
     return;
   }
 
-  FAODExport.exportParentMemo(currentResult);
+  try {
+    FAODExport.exportParentMemo(currentResult);
+  } catch (error) {
+    console.error('Ошибка генерации памятки:', error);
+    showError('Ошибка генерации памятки: ' + error.message);
+  }
 }
