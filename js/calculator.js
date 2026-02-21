@@ -37,8 +37,9 @@ class FAODCalculator {
         'complementary_foods'
       ];
 
+      const cacheBreaker = Date.now();
       const promises = files.map(file =>
-        fetch(`data/${file}.json`).then(r => r.json())
+        fetch(`data/${file}.json?v=${cacheBreaker}`).then(r => r.json())
       );
 
       const results = await Promise.all(promises);
@@ -343,11 +344,13 @@ class FAODCalculator {
     let effectiveRatios = { ...ratios };
     if (condition === 'crisis') {
       const crisisAdj = this.data.macroRatios.crisisAdjustments;
+      console.log('Crisis mode - crisisAdj.carbsIncrease:', crisisAdj.carbsIncrease);
       effectiveRatios = {
         ...ratios,
         lctPercent: { min: 0, max: 0, recommended: 0 },
         carbsPercent: crisisAdj.carbsIncrease
       };
+      console.log('Crisis mode - effectiveRatios.carbsPercent:', effectiveRatios.carbsPercent);
     }
 
     // Расчёт в граммах
@@ -356,6 +359,8 @@ class FAODCalculator {
     const proteinPercent = effectiveRatios.proteinPercent?.recommended || 12;
     const carbsPercent = effectiveRatios.carbsPercent?.recommended || effectiveRatios.carbsPercent?.min || 55;
     const fatPercent = effectiveRatios.fatPercent?.recommended || 30;
+
+    console.log('Calculated carbsPercent:', carbsPercent, 'from:', effectiveRatios.carbsPercent);
     const mctPercent = effectiveRatios.mctPercent?.recommended || 0;
     const lctPercent = effectiveRatios.lctPercent?.recommended || fatPercent;
 
@@ -667,26 +672,28 @@ class FAODCalculator {
     if (diagInfo?.carnitineRequired) {
       const isOCTN2 = diagnosis === 'OCTN2';
       const dosing = isOCTN2
-        ? carnitineInfo.dosing.OCTN2.oral.standard
-        : carnitineInfo.dosing.secondaryDeficiency.oral;
+        ? carnitineInfo.dosing?.OCTN2?.oral?.standard
+        : carnitineInfo.dosing?.secondaryDeficiency?.oral;
 
-      const minDose = Math.round(weight * dosing.doseMin);
-      const maxDose = Math.round(weight * dosing.doseMax);
-      const cappedMax = dosing.maxDailyDose
-        ? Math.min(maxDose, dosing.maxDailyDose)
-        : maxDose;
+      if (dosing && dosing.doseMin) {
+        const minDose = Math.round(weight * dosing.doseMin);
+        const maxDose = Math.round(weight * dosing.doseMax);
+        const cappedMax = dosing.maxDailyDose
+          ? Math.min(maxDose, dosing.maxDailyDose)
+          : maxDose;
 
-      result.carnitine = {
-        required: true,
-        indication: isOCTN2 ? 'Патогенетическое лечение' : 'Вторичный дефицит',
-        doseRange: `${dosing.doseMin}-${dosing.doseMax} мг/кг/сут`,
-        dailyDose: `${minDose}-${cappedMax} мг/сут`,
-        frequency: dosing.frequency,
-        ivAllowed: diagInfo.carnitineIVAllowed,
-        ivNote: !diagInfo.carnitineIVAllowed
-          ? 'В/в введение противопоказано!'
-          : null
-      };
+        result.carnitine = {
+          required: true,
+          indication: isOCTN2 ? 'Патогенетическое лечение' : 'Вторичный дефицит',
+          doseRange: `${dosing.doseMin}-${dosing.doseMax} мг/кг/сут`,
+          dailyDose: `${minDose}-${cappedMax} мг/сут`,
+          frequency: dosing.frequency,
+          ivAllowed: diagInfo.carnitineIVAllowed,
+          ivNote: !diagInfo.carnitineIVAllowed
+            ? 'В/в введение противопоказано!'
+            : null
+        };
+      }
     } else if (['CPT1', 'CACT', 'CPT2', 'VLCAD'].includes(diagnosis) && condition === 'crisis') {
       // Карнитин только при кризе per os
       result.carnitine = {
@@ -708,64 +715,72 @@ class FAODCalculator {
 
     // Рибофлавин (GA2)
     if (diagnosis === 'GA2') {
-      const riboDosing = meds.riboflavin.dosing.GA2;
-      const infantDose = riboDosing.infantDose;
+      const riboDosing = meds.riboflavin?.dosing?.GA2;
+      const infantDose = riboDosing?.infantDose;
 
-      const minDose = Math.round(weight * infantDose.doseMin);
-      const maxDose = Math.min(
-        Math.round(weight * infantDose.doseMax),
-        infantDose.maxDailyDose
-      );
+      if (infantDose && infantDose.doseMin) {
+        const minDose = Math.round(weight * infantDose.doseMin);
+        const maxDose = Math.min(
+          Math.round(weight * infantDose.doseMax),
+          infantDose.maxDailyDose || 400
+        );
 
-      result.riboflavin = {
-        required: true,
-        indication: 'Патогенетическое лечение (рибофлавин-чувствительные формы)',
-        doseRange: `${infantDose.doseMin}-${infantDose.doseMax} мг/кг/сут`,
-        dailyDose: `${minDose}-${maxDose} мг/сут`,
-        frequency: riboDosing.oral.frequency,
-        note: 'Начать с минимальной дозы, оценить ответ через 2-4 недели'
-      };
+        result.riboflavin = {
+          required: true,
+          indication: 'Патогенетическое лечение (рибофлавин-чувствительные формы)',
+          doseRange: `${infantDose.doseMin}-${infantDose.doseMax} мг/кг/сут`,
+          dailyDose: `${minDose}-${maxDose} мг/сут`,
+          frequency: riboDosing?.oral?.frequency || '1-3 раза в день',
+          note: 'Начать с минимальной дозы, оценить ответ через 2-4 недели'
+        };
+      }
     }
 
     // DHA (LCHAD, TFP, VLCAD)
     if (diagInfo?.requiresDHA) {
-      const dhaDosing = meds.dha.dosing;
+      const dhaDosing = meds.dha?.dosing;
       let doseGroup;
 
-      if (ageInMonths < 12) {
-        doseGroup = dhaDosing.infants;
-      } else if (ageInMonths < 36) {
-        doseGroup = dhaDosing.children1to3;
-      } else if (ageInMonths < 120) {
-        doseGroup = dhaDosing.children3to10;
-      } else {
-        doseGroup = dhaDosing.adolescentsAndAdults;
-      }
+      if (dhaDosing) {
+        if (ageInMonths < 12) {
+          doseGroup = dhaDosing.infants;
+        } else if (ageInMonths < 36) {
+          doseGroup = dhaDosing.children1to3;
+        } else if (ageInMonths < 120) {
+          doseGroup = dhaDosing.children3to10;
+        } else {
+          doseGroup = dhaDosing.adolescentsAndAdults;
+        }
 
-      result.dha = {
-        required: true,
-        indication: 'Профилактика ретинопатии и нейропатии',
-        dailyDose: `${doseGroup.dose.min}-${doseGroup.dose.max} мг/сут`,
-        recommended: `${doseGroup.dose.recommended || doseGroup.dose.min} мг/сут`,
-        precautions: meds.dha.precautions
-      };
+        if (doseGroup?.dose) {
+          result.dha = {
+            required: true,
+            indication: 'Профилактика ретинопатии и нейропатии',
+            dailyDose: `${doseGroup.dose.min}-${doseGroup.dose.max} мг/сут`,
+            recommended: `${doseGroup.dose.recommended || doseGroup.dose.min} мг/сут`,
+            precautions: meds.dha?.precautions
+          };
+        }
+      }
     }
 
     // CoQ10 (опционально для GA2, VLCAD, LCHAD, TFP)
     if (['GA2', 'VLCAD', 'LCHAD', 'TFP'].includes(diagnosis)) {
-      const coq10 = meds.coq10.dosing.children;
-      const minDose = Math.round(weight * coq10.doseMin);
-      const maxDose = Math.min(
-        Math.round(weight * coq10.doseMax),
-        coq10.maxDailyDose
-      );
+      const coq10 = meds.coq10?.dosing?.children;
+      if (coq10?.doseMin) {
+        const minDose = Math.round(weight * coq10.doseMin);
+        const maxDose = Math.min(
+          Math.round(weight * coq10.doseMax),
+          coq10.maxDailyDose || 300
+        );
 
-      result.other.push({
-        name: 'Коэнзим Q10',
-        required: false,
-        indication: 'Антиоксидантная поддержка (опционально)',
-        dailyDose: `${minDose}-${maxDose} мг/сут`
-      });
+        result.other.push({
+          name: 'Коэнзим Q10',
+          required: false,
+          indication: 'Антиоксидантная поддержка (опционально)',
+          dailyDose: `${minDose}-${maxDose} мг/сут`
+        });
+      }
     }
 
     // Жирорастворимые витамины при строгом ограничении LCT
