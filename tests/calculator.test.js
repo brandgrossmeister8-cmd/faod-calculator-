@@ -353,6 +353,47 @@ test('Смеси имеют показания по диагнозам', () => {
   }
 });
 
+// --- Тесты детального меню ---
+console.log('\n--- Детальное меню ---');
+
+// Загрузим дополнительные данные для теста
+const complementaryFoods = JSON.parse(fs.readFileSync(
+  path.join(__dirname, '..', 'data', 'complementary_foods.json'), 'utf8'
+));
+
+test('Данные о смесях загружены (Моноген, Нутриген)', () => {
+  assertTrue(complementaryFoods.formulas.monogen !== undefined, 'Моноген');
+  assertTrue(complementaryFoods.formulas.nutrigen40mct !== undefined, 'Нутриген 40-MCT');
+  assertTrue(complementaryFoods.formulas.breastMilk !== undefined, 'Грудное молоко');
+});
+
+test('Данные о продуктах прикорма загружены', () => {
+  assertTrue(complementaryFoods.vegetables.products.length >= 5, 'Овощи >= 5');
+  assertTrue(complementaryFoods.cereals.products.length >= 3, 'Каши >= 3');
+  assertTrue(complementaryFoods.meat.products.length >= 3, 'Мясо >= 3');
+  assertTrue(complementaryFoods.fruits.products.length >= 3, 'Фрукты >= 3');
+});
+
+test('Расписание кормления по возрастам присутствует', () => {
+  assertTrue(complementaryFoods.feedingSchedules['infant4-6m'] !== undefined, '4-6 мес');
+  assertTrue(complementaryFoods.feedingSchedules['infant6-9m'] !== undefined, '6-9 мес');
+  assertTrue(complementaryFoods.feedingSchedules['toddler1-3y'] !== undefined, '1-3 года');
+});
+
+test('Порции по возрастам указаны корректно', () => {
+  assertTrue(complementaryFoods.portionsByAge['6-9m'] !== undefined, '6-9 мес');
+  assertTrue(complementaryFoods.portionsByAge['1-3y'] !== undefined, '1-3 года');
+  assertEqual(complementaryFoods.portionsByAge['6-9m'].formula_ml_per_kg, 120, 'Смесь 120 мл/кг');
+});
+
+test('MCT-продукты имеют противопоказания', () => {
+  const mctProducts = complementaryFoods.mctProducts.products;
+  assertTrue(mctProducts.length >= 1, 'Минимум 1 MCT-продукт');
+  const mctOil = mctProducts[0];
+  assertTrue(mctOil.contraindications.includes('MCAD'), 'MCAD в противопоказаниях');
+  assertTrue(mctOil.contraindications.includes('GA2'), 'GA2 в противопоказаниях');
+});
+
 // --- Итоги ---
 console.log('\n=== Результаты ===');
 console.log(`Пройдено: ${passedTests}`);

@@ -926,8 +926,8 @@ class FAODCalculator {
    * Расчёт детального меню по часам
    */
   calculateDetailedMenu(input) {
-    const { weight, diagnosis, clinicalForm, condition, breastfeeding } = input;
-    const ageInMonths = input.ageInMonths || this._calculateAgeInMonths(input.birthDate, input.calcDate);
+    const { weight, diagnosis, clinicalForm, condition, breastfeeding, sex } = input;
+    const ageInMonths = input.ageInMonths || this._calculateAgeInMonths(input.birthDate, input.calculationDate);
 
     const complementary = this.data.complementaryFoods;
     const formulas = this.data.formulas;
@@ -956,8 +956,8 @@ class FAODCalculator {
     }
 
     // Рассчитываем общую калорийность
-    const energy = this._calculateEnergy(ageInMonths, weight, input.sex, condition);
-    const macros = this._calculateMacros(energy.totalKcal, ageInMonths, diagnosis, clinicalForm, condition);
+    const energy = this._calculateEnergy(ageInMonths, weight, sex || 'male', condition);
+    const macros = this._calculateMacronutrients(energy.totalKcal, diagnosis, clinicalForm, condition);
 
     // Определяем тип смеси
     const effectiveForm = clinicalForm || diagnosis;
