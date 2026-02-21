@@ -109,7 +109,8 @@ class FAODCalculator {
     const feeding = this._calculateFeedingIntervals(
       ageInMonths,
       input.condition,
-      input.diagnosis
+      input.diagnosis,
+      input.clinicalForm
     );
 
     // Расчёт препаратов
@@ -512,7 +513,7 @@ class FAODCalculator {
   /**
    * Расчёт интервалов кормления
    */
-  _calculateFeedingIntervals(ageInMonths, condition, diagnosis) {
+  _calculateFeedingIntervals(ageInMonths, condition, diagnosis, clinicalForm) {
     const intervals = this.data.feedingIntervals;
 
     // Базовые интервалы по возрасту
@@ -530,7 +531,55 @@ class FAODCalculator {
     let feedingsPerDay = ageGroup.feedingsPerDay;
     let recommendations = [ageGroup.note];
 
-    // Коррекция по состоянию
+    // Применение специфики диагноза ПЕРЕД коррекцией по состоянию
+    const diagSpecific = intervals.diagnosisSpecific[diagnosis];
+    let diagnosisNote = null;
+
+    if (diagSpecific) {
+      diagnosisNote = diagSpecific.description;
+
+      // Применяем коррекцию интервалов по диагнозу
+      if (diagSpecific.intervalAdjustment) {
+        const adj = diagSpecific.intervalAdjustment;
+
+        if (adj.type === 'stricter') {
+          // Строгие интервалы для LCHAD, TFP, CACT
+          dayInterval = Math.max(2, dayInterval - (adj.dayIntervalReduction || 0));
+          nightInterval = Math.max(3, nightInterval - (adj.nightIntervalReduction || 0));
+          if (adj.maxNightInterval && nightInterval > adj.maxNightInterval) {
+            nightInterval = adj.maxNightInterval;
+          }
+        } else if (adj.type === 'conditional' && clinicalForm) {
+          // Условная коррекция по клинической форме (VLCAD, CPT2)
+          let formAdj = null;
+          if (diagnosis === 'VLCAD') {
+            formAdj = clinicalForm === 'symptomatic' ? adj.symptomaticForm : adj.asymptomaticForm;
+          } else if (diagnosis === 'CPT2') {
+            if (clinicalForm === 'neonatal') formAdj = adj.neonatalForm;
+            else if (clinicalForm === 'infantile') formAdj = adj.infantileForm;
+            else formAdj = adj.lateForm;
+          }
+
+          if (formAdj) {
+            dayInterval = Math.max(2, dayInterval - (formAdj.dayIntervalReduction || 0));
+            nightInterval = Math.max(3, nightInterval - (formAdj.nightIntervalReduction || 0));
+            if (formAdj.maxNightInterval && nightInterval > formAdj.maxNightInterval) {
+              nightInterval = formAdj.maxNightInterval;
+            }
+          }
+        } else if (adj.type === 'progressive' && diagnosis === 'MCAD' && ageInMonths >= 12) {
+          // MCAD: после года можно увеличить ночной интервал
+          nightInterval = Math.min(12, nightInterval + (adj.nightIntervalBonus || 0));
+        }
+      }
+
+      // Примечание для новорождённых с MCAD
+      if (diagnosis === 'MCAD' && ageInMonths < 4 && diagSpecific.newbornNote) {
+        recommendations.push(diagSpecific.newbornNote);
+      }
+    }
+
+    // Коррекция по состоянию (ПОСЛЕ диагноза)
     if (condition === 'intercurrent') {
       const adj = intervals.intercurrentIllness;
       dayInterval = Math.max(
@@ -541,24 +590,26 @@ class FAODCalculator {
         adj.minimumNightInterval,
         nightInterval - adj.nightIntervalReduction
       );
-      feedingsPerDay = Math.ceil(24 / ((dayInterval + nightInterval) / 2));
+      // Правильный расчёт кормлений: 14ч дня + 10ч ночи
+      const dayHours = 14;
+      const nightHours = 10;
+      const dayFeedings = Math.ceil(dayHours / dayInterval);
+      const nightFeedings = Math.ceil(nightHours / nightInterval);
+      feedingsPerDay = dayFeedings + nightFeedings;
       recommendations = [...adj.recommendations];
     } else if (condition === 'crisis') {
       const crisis = intervals.metabolicCrisis;
       dayInterval = crisis.dayIntervalHours;
       nightInterval = crisis.nightIntervalHours;
-      feedingsPerDay = Math.ceil(24 / 2.5);
+      feedingsPerDay = Math.ceil(24 / 2); // Каждые 2 часа = 12 кормлений
       recommendations = [...crisis.recommendations];
-    }
-
-    // Специфика диагноза
-    const diagSpecific = intervals.diagnosisSpecific[diagnosis];
-    let diagnosisNote = null;
-    if (diagSpecific) {
-      diagnosisNote = diagSpecific.description;
-      if (diagnosis === 'MCAD' && ageInMonths < 4) {
-        recommendations.push(diagSpecific.newbornNote);
-      }
+    } else {
+      // Для стабильного состояния пересчитываем кормления с учётом диагноза
+      const dayHours = 14;
+      const nightHours = 10;
+      const dayFeedings = Math.ceil(dayHours / dayInterval);
+      const nightFeedings = Math.ceil(nightHours / nightInterval);
+      feedingsPerDay = dayFeedings + nightFeedings;
     }
 
     // Кукурузный крахмал (для детей старше 8 месяцев при необходимости)

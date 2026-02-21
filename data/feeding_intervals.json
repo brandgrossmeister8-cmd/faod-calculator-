@@ -118,16 +118,78 @@
     "MCAD": {
       "description": "Специфические рекомендации для MCAD",
       "newbornNote": "При грудном вскармливании — дополнить смесью 60 мл/кг/день в первые 72 часа",
-      "safeIntervals": {
-        "0-4 months": 4,
-        "5-12 months": "5-12 часов (постепенное увеличение на 1 час каждый месяц)",
-        "over12 months": 12
+      "intervalAdjustment": {
+        "type": "progressive",
+        "comment": "MCAD — лучшая толерантность к голоданию после младенчества",
+        "nightIntervalBonus": 2
       }
     },
     "LCHAD": {
       "description": "Специфические рекомендации для LCHAD/TFP",
       "stricterIntervals": true,
+      "intervalAdjustment": {
+        "type": "stricter",
+        "dayIntervalReduction": 1,
+        "nightIntervalReduction": 2,
+        "maxNightInterval": 8
+      },
       "cornstarchNote": "С 8-12 месяцев можно давать кукурузный крахмал 1 г/кг перед сном"
+    },
+    "TFP": {
+      "description": "Специфические рекомендации для TFP (аналогично LCHAD)",
+      "stricterIntervals": true,
+      "intervalAdjustment": {
+        "type": "stricter",
+        "dayIntervalReduction": 1,
+        "nightIntervalReduction": 2,
+        "maxNightInterval": 8
+      },
+      "cornstarchNote": "С 8-12 месяцев можно давать кукурузный крахмал 1 г/кг перед сном"
+    },
+    "VLCAD": {
+      "description": "Специфические рекомендации для VLCAD",
+      "intervalAdjustment": {
+        "type": "conditional",
+        "symptomaticForm": {
+          "dayIntervalReduction": 1,
+          "nightIntervalReduction": 1,
+          "maxNightInterval": 10
+        },
+        "asymptomaticForm": {
+          "dayIntervalReduction": 0,
+          "nightIntervalReduction": 0
+        }
+      }
+    },
+    "CPT2": {
+      "description": "Специфические рекомендации для CPT2",
+      "intervalAdjustment": {
+        "type": "conditional",
+        "neonatalForm": {
+          "dayIntervalReduction": 1,
+          "nightIntervalReduction": 2,
+          "maxNightInterval": 6
+        },
+        "infantileForm": {
+          "dayIntervalReduction": 1,
+          "nightIntervalReduction": 1,
+          "maxNightInterval": 8
+        },
+        "lateForm": {
+          "dayIntervalReduction": 0,
+          "nightIntervalReduction": 0
+        }
+      }
+    },
+    "CACT": {
+      "description": "Специфические рекомендации для CACT (тяжёлое течение)",
+      "stricterIntervals": true,
+      "intervalAdjustment": {
+        "type": "stricter",
+        "dayIntervalReduction": 1,
+        "nightIntervalReduction": 2,
+        "maxNightInterval": 6
+      }
     }
   },
 
