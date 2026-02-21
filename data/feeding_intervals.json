@@ -1,0 +1,234 @@
+{
+  "description": "Максимальные интервалы между кормлениями при FAOD",
+  "source": "Клинические рекомендации РФ 2024, консенсус экспертов",
+
+  "stableState": {
+    "description": "При стабильном состоянии",
+    "intervals": [
+      {
+        "ageGroup": "newborn",
+        "ageMonthsFrom": 0,
+        "ageMonthsTo": 0.5,
+        "label": "Новорождённые (первые 2 недели)",
+        "dayIntervalHours": 3,
+        "nightIntervalHours": 3,
+        "feedingsPerDay": 8,
+        "note": "Особенно важно в первые 72 часа жизни"
+      },
+      {
+        "ageGroup": "newborn_late",
+        "ageMonthsFrom": 0.5,
+        "ageMonthsTo": 3,
+        "label": "Новорождённые (2 недели - 3 мес)",
+        "dayIntervalHours": 3,
+        "nightIntervalHours": 3,
+        "feedingsPerDay": 8,
+        "note": "Ночное голодание можно продлить до 4 ч с 6 недель при хорошей переносимости"
+      },
+      {
+        "ageGroup": "infant_early",
+        "ageMonthsFrom": 3,
+        "ageMonthsTo": 6,
+        "label": "3-6 месяцев",
+        "dayIntervalHours": 4,
+        "nightIntervalHours": 4,
+        "feedingsPerDay": 6,
+        "note": "Ночное голодание можно продлить до 6 ч при хорошей переносимости"
+      },
+      {
+        "ageGroup": "infant_late",
+        "ageMonthsFrom": 6,
+        "ageMonthsTo": 12,
+        "label": "6-12 месяцев",
+        "dayIntervalHours": 4,
+        "nightIntervalHours": 8,
+        "feedingsPerDay": 5,
+        "note": "Под контролем уровня гликемии"
+      },
+      {
+        "ageGroup": "toddler",
+        "ageMonthsFrom": 12,
+        "ageMonthsTo": 36,
+        "label": "1-3 года",
+        "dayIntervalHours": 4,
+        "nightIntervalHours": 10,
+        "feedingsPerDay": 5,
+        "note": "С осторожностью разрешать голодание более 10 часов"
+      },
+      {
+        "ageGroup": "preschool",
+        "ageMonthsFrom": 36,
+        "ageMonthsTo": 72,
+        "label": "3-6 лет",
+        "dayIntervalHours": 4,
+        "nightIntervalHours": 10,
+        "feedingsPerDay": 5,
+        "note": "Большинство детей переносят 10-12 ч ночного голодания"
+      },
+      {
+        "ageGroup": "school",
+        "ageMonthsFrom": 72,
+        "ageMonthsTo": 216,
+        "label": "6-18 лет",
+        "dayIntervalHours": 5,
+        "nightIntervalHours": 12,
+        "feedingsPerDay": 4,
+        "note": "3 основных приёма пищи + 1-2 перекуса"
+      },
+      {
+        "ageGroup": "adult",
+        "ageMonthsFrom": 216,
+        "ageMonthsTo": 1200,
+        "label": "Взрослые",
+        "dayIntervalHours": 6,
+        "nightIntervalHours": 12,
+        "feedingsPerDay": 3,
+        "note": "Не более 12 часов голодания. Избегать алкоголя натощак."
+      }
+    ]
+  },
+
+  "intercurrentIllness": {
+    "description": "При интеркуррентном заболевании (ОРВИ, гастроэнтерит)",
+    "adjustment": "reduce",
+    "dayIntervalReduction": 1,
+    "nightIntervalReduction": 2,
+    "minimumDayInterval": 2,
+    "minimumNightInterval": 3,
+    "recommendations": [
+      "Сократить интервалы между кормлениями",
+      "Увеличить потребление углеводов (20-25% раствор глюкозы/мальтодекстрина)",
+      "При рвоте/отказе от еды — госпитализация для в/в терапии"
+    ]
+  },
+
+  "metabolicCrisis": {
+    "description": "При метаболическом кризе или подозрении на него",
+    "dayIntervalHours": 2,
+    "nightIntervalHours": 2,
+    "recommendations": [
+      "Кормить каждые 2-3 часа круглосуточно",
+      "Дать углеводы (раствор глюкозы) немедленно",
+      "При невозможности перорального питания — назогастральный зонд",
+      "Госпитализация для в/в инфузии глюкозы"
+    ]
+  },
+
+  "diagnosisSpecific": {
+    "MCAD": {
+      "description": "Специфические рекомендации для MCAD",
+      "newbornNote": "При грудном вскармливании — дополнить смесью 60 мл/кг/день в первые 72 часа",
+      "safeIntervals": {
+        "0-4 months": 4,
+        "5-12 months": "5-12 часов (постепенное увеличение на 1 час каждый месяц)",
+        "over12 months": 12
+      }
+    },
+    "LCHAD": {
+      "description": "Специфические рекомендации для LCHAD/TFP",
+      "stricterIntervals": true,
+      "cornstarchNote": "С 8-12 месяцев можно давать кукурузный крахмал 1 г/кг перед сном"
+    }
+  },
+
+  "cornstarch": {
+    "description": "Кукурузный крахмал для предотвращения ночной гипогликемии",
+    "minimumAge": 8,
+    "unit": "месяцев",
+    "dose": "1 г/кг",
+    "dilution": "Разведение 1:2 в воде или смеси",
+    "timing": "Перед сном",
+    "indication": "При регистрации гипогликемии в ночные часы",
+    "note": "Используется у пациентов с тяжёлым течением, склонных к гипогликемии"
+  },
+
+  "glucoseEmergency": {
+    "description": "Экстренное введение глюкозы per os при подозрении на криз",
+    "solutions": [
+      {
+        "ageMonthsFrom": 0,
+        "ageMonthsTo": 6,
+        "concentrationPercent": 15,
+        "rateMLperKgHour": 7.7,
+        "dailyMLperKg": 183,
+        "dailyKcalPerKg": 110
+      },
+      {
+        "ageMonthsFrom": 6,
+        "ageMonthsTo": 12,
+        "concentrationPercent": 15,
+        "rateMLperKgHour": 7.0,
+        "dailyMLperKg": 168,
+        "dailyKcalPerKg": 100
+      },
+      {
+        "ageMonthsFrom": 12,
+        "ageMonthsTo": 36,
+        "concentrationPercent": 20,
+        "rateMLperKgHour": 4.5,
+        "dailyMLperKg": 110,
+        "dailyKcalPerKg": 90
+      },
+      {
+        "ageMonthsFrom": 36,
+        "ageMonthsTo": 72,
+        "concentrationPercent": 25,
+        "rateMLperKgHour": 3.3,
+        "dailyMLperKg": 80,
+        "dailyKcalPerKg": 80
+      },
+      {
+        "ageMonthsFrom": 72,
+        "ageMonthsTo": 144,
+        "concentrationPercent": 25,
+        "rateMLperKgHour": 2.6,
+        "dailyMLperKg": 65,
+        "dailyKcalPerKg": 65
+      },
+      {
+        "ageMonthsFrom": 144,
+        "ageMonthsTo": 180,
+        "concentrationPercent": 30,
+        "rateMLperKgHour": 1.8,
+        "dailyMLperKg": 42,
+        "dailyKcalPerKg": 50
+      },
+      {
+        "ageMonthsFrom": 180,
+        "ageMonthsTo": 1200,
+        "concentrationPercent": 30,
+        "rateMLperKgHour": 1.6,
+        "dailyMLperKg": 38,
+        "dailyKcalPerKg": 45
+      }
+    ]
+  },
+
+  "ivGlucose": {
+    "description": "В/в введение глюкозы при госпитализации",
+    "rates": [
+      {
+        "ageYearsFrom": 0,
+        "ageYearsTo": 3,
+        "rateMgPerKgMin": "10-12",
+        "note": "Новорождённые и дети до 3 лет"
+      },
+      {
+        "ageYearsFrom": 3,
+        "ageYearsTo": 10,
+        "rateMgPerKgMin": "8-10",
+        "note": "Дети 3-10 лет"
+      },
+      {
+        "ageYearsFrom": 10,
+        "ageYearsTo": 100,
+        "rateMgPerKgMin": "5-8",
+        "note": "Старше 10 лет"
+      }
+    ],
+    "concentration": "10% декстроза",
+    "targetGlucose": "> 4.0 ммоль/л",
+    "hyperglycemiaThreshold": "13.8 ммоль/л",
+    "insulinNote": "При гипергликемии >13.8 ммоль/л — инсулин 0.01 МЕ/кг/мин, НЕ снижать глюкозу"
+  }
+}

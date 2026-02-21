@@ -1,0 +1,109 @@
+{
+  "source": "FAO/WHO/UNU 2001, 2007",
+  "description": "Нормы физиологических потребностей в энергии (ккал/кг/сут)",
+
+  "infants": {
+    "description": "Дети до 1 года (по месяцам)",
+    "unit": "ккал/кг/сут",
+    "data": [
+      { "ageMonthsFrom": 0, "ageMonthsTo": 1, "male": 113, "female": 107 },
+      { "ageMonthsFrom": 1, "ageMonthsTo": 2, "male": 104, "female": 101 },
+      { "ageMonthsFrom": 2, "ageMonthsTo": 3, "male": 95, "female": 94 },
+      { "ageMonthsFrom": 3, "ageMonthsTo": 4, "male": 82, "female": 84 },
+      { "ageMonthsFrom": 4, "ageMonthsTo": 5, "male": 81, "female": 83 },
+      { "ageMonthsFrom": 5, "ageMonthsTo": 6, "male": 81, "female": 82 },
+      { "ageMonthsFrom": 6, "ageMonthsTo": 7, "male": 79, "female": 78 },
+      { "ageMonthsFrom": 7, "ageMonthsTo": 8, "male": 79, "female": 78 },
+      { "ageMonthsFrom": 8, "ageMonthsTo": 9, "male": 79, "female": 78 },
+      { "ageMonthsFrom": 9, "ageMonthsTo": 10, "male": 80, "female": 79 },
+      { "ageMonthsFrom": 10, "ageMonthsTo": 11, "male": 80, "female": 79 },
+      { "ageMonthsFrom": 11, "ageMonthsTo": 12, "male": 81, "female": 79 }
+    ]
+  },
+
+  "children": {
+    "description": "Дети 1-18 лет (по годам)",
+    "unit": "ккал/кг/сут",
+    "data": [
+      { "ageYearsFrom": 1, "ageYearsTo": 2, "male": 82.4, "female": 80.1 },
+      { "ageYearsFrom": 2, "ageYearsTo": 3, "male": 83.6, "female": 80.6 },
+      { "ageYearsFrom": 3, "ageYearsTo": 4, "male": 79.7, "female": 76.5 },
+      { "ageYearsFrom": 4, "ageYearsTo": 5, "male": 76.8, "female": 73.9 },
+      { "ageYearsFrom": 5, "ageYearsTo": 6, "male": 74.5, "female": 71.5 },
+      { "ageYearsFrom": 6, "ageYearsTo": 7, "male": 72.6, "female": 69.3 },
+      { "ageYearsFrom": 7, "ageYearsTo": 8, "male": 70.5, "female": 66.7 },
+      { "ageYearsFrom": 8, "ageYearsTo": 9, "male": 68.5, "female": 63.8 },
+      { "ageYearsFrom": 9, "ageYearsTo": 10, "male": 66.6, "female": 60.8 },
+      { "ageYearsFrom": 10, "ageYearsTo": 11, "male": 64.6, "female": 57.8 },
+      { "ageYearsFrom": 11, "ageYearsTo": 12, "male": 62.4, "female": 54.8 },
+      { "ageYearsFrom": 12, "ageYearsTo": 13, "male": 60.2, "female": 52.0 },
+      { "ageYearsFrom": 13, "ageYearsTo": 14, "male": 57.9, "female": 49.3 },
+      { "ageYearsFrom": 14, "ageYearsTo": 15, "male": 55.6, "female": 47.0 },
+      { "ageYearsFrom": 15, "ageYearsTo": 16, "male": 53.4, "female": 45.3 },
+      { "ageYearsFrom": 16, "ageYearsTo": 17, "male": 51.6, "female": 44.4 },
+      { "ageYearsFrom": 17, "ageYearsTo": 18, "male": 50.3, "female": 44.1 }
+    ]
+  },
+
+  "adults": {
+    "description": "Взрослые (средняя активность)",
+    "unit": "ккал/кг/сут",
+    "note": "Значения зависят от массы тела, приведены для 70 кг и 50 кг",
+    "data": [
+      {
+        "ageYearsFrom": 18,
+        "ageYearsTo": 29,
+        "weight70kg": { "male": 43.7, "female": 38.0 },
+        "weight50kg": { "male": 50.6, "female": 43.0 }
+      },
+      {
+        "ageYearsFrom": 30,
+        "ageYearsTo": 59,
+        "weight70kg": { "male": 41.8, "female": 35.3 },
+        "weight50kg": { "male": 50.6, "female": 43.7 }
+      },
+      {
+        "ageYearsFrom": 60,
+        "ageYearsTo": 100,
+        "weight70kg": { "male": 38.0, "female": 32.0 },
+        "weight50kg": { "male": 45.0, "female": 40.0 }
+      }
+    ]
+  },
+
+  "adjustments": {
+    "crisis": {
+      "description": "Коррекция при метаболическом кризе",
+      "multiplier": 1.15,
+      "note": "+10-20% к базовой потребности"
+    },
+    "intercurrent": {
+      "description": "Коррекция при интеркуррентном заболевании",
+      "multiplier": 1.10,
+      "note": "+10% к базовой потребности"
+    },
+    "stable": {
+      "description": "Стабильное состояние",
+      "multiplier": 1.0
+    }
+  },
+
+  "macronutrientEnergy": {
+    "protein": {
+      "kcalPerGram": 4,
+      "description": "1 г белка = 4 ккал"
+    },
+    "carbohydrate": {
+      "kcalPerGram": 4,
+      "description": "1 г углеводов = 4 ккал"
+    },
+    "fat": {
+      "kcalPerGram": 9,
+      "description": "1 г жира = 9 ккал"
+    },
+    "mct": {
+      "kcalPerGram": 8.3,
+      "description": "1 г MCT = 8.3 ккал"
+    }
+  }
+}

@@ -1,0 +1,384 @@
+{
+  "description": "Дозировки препаратов при FAOD",
+  "source": "Клинические рекомендации РФ 2024",
+
+  "carnitine": {
+    "description": "L-карнитин (левокарнитин)",
+    "tradenames": ["Элькар", "Карнитен", "L-карнитин"],
+    "forms": ["раствор 300 мг/мл", "капсулы 250/500 мг", "раствор для инъекций 100 мг/мл"],
+
+    "indications": {
+      "primary": {
+        "diagnoses": ["OCTN2"],
+        "description": "Основное патогенетическое лечение при первичном дефиците карнитина"
+      },
+      "supportive": {
+        "diagnoses": ["SCAD", "MCAD", "SCHAD"],
+        "description": "Поддерживающая терапия при вторичном дефиците"
+      },
+      "crisisOnly": {
+        "diagnoses": ["CPT1", "CACT", "CPT2", "VLCAD_ASYMPTOMATIC"],
+        "description": "Только при остром метаболическом кризе (p/os)"
+      },
+      "contraindicated": {
+        "diagnoses": ["VLCAD_SYMPTOMATIC", "LCHAD", "TFP"],
+        "description": "Противопоказан! Может усилить аритмии",
+        "ivContraindicated": true
+      },
+      "notIndicated": {
+        "diagnoses": ["GA2"],
+        "description": "Не показан при GA2"
+      }
+    },
+
+    "dosing": {
+      "OCTN2": {
+        "oral": {
+          "standard": {
+            "doseMin": 100,
+            "doseMax": 200,
+            "unit": "мг/кг/сут",
+            "frequency": "3 раза в день",
+            "maxDailyDose": 3000,
+            "maxUnit": "мг/сут"
+          },
+          "maintenance": {
+            "doseMin": 50,
+            "doseMax": 100,
+            "unit": "мг/кг/сут",
+            "note": "После нормализации уровня карнитина в крови"
+          }
+        },
+        "iv": {
+          "crisis": {
+            "doseMin": 100,
+            "doseMax": 200,
+            "unit": "мг/кг/сут",
+            "note": "В/в при невозможности перорального приёма"
+          }
+        }
+      },
+      "secondaryDeficiency": {
+        "oral": {
+          "doseMin": 50,
+          "doseMax": 100,
+          "unit": "мг/кг/сут",
+          "frequency": "2-3 раза в день",
+          "note": "При документированном снижении карнитина"
+        }
+      },
+      "crisisProtocol": {
+        "oral": {
+          "dose": 100,
+          "unit": "мг/кг",
+          "frequency": "однократно",
+          "note": "Экстренный приём при подозрении на криз"
+        }
+      }
+    },
+
+    "monitoring": {
+      "parameters": ["свободный карнитин", "ацилкарнитины", "соотношение AC/FC"],
+      "targetFreeCarnitine": {
+        "min": 25,
+        "max": 50,
+        "unit": "мкмоль/л"
+      },
+      "frequency": "каждые 3-6 месяцев"
+    }
+  },
+
+  "riboflavin": {
+    "description": "Рибофлавин (витамин B2)",
+    "tradenames": ["Рибофлавин", "Витамин B2"],
+    "forms": ["таблетки 10 мг", "капсулы 100 мг"],
+
+    "indications": {
+      "required": {
+        "diagnoses": ["GA2"],
+        "description": "Патогенетическое лечение при GA2 (рибофлавин-чувствительные формы)"
+      },
+      "optional": {
+        "diagnoses": ["VLCAD", "LCHAD", "TFP"],
+        "description": "Может быть полезен как кофактор"
+      }
+    },
+
+    "dosing": {
+      "GA2": {
+        "oral": {
+          "doseMin": 100,
+          "doseMax": 400,
+          "unit": "мг/сут",
+          "frequency": "1-3 раза в день",
+          "note": "Начать с 100 мг/сут, титровать по ответу"
+        },
+        "infantDose": {
+          "doseMin": 10,
+          "doseMax": 20,
+          "unit": "мг/кг/сут",
+          "maxDailyDose": 400,
+          "maxUnit": "мг/сут"
+        }
+      },
+      "supportive": {
+        "oral": {
+          "doseMin": 50,
+          "doseMax": 100,
+          "unit": "мг/сут",
+          "frequency": "1 раз в день"
+        }
+      }
+    },
+
+    "monitoring": {
+      "parameters": ["клинический ответ", "ацилкарнитиновый профиль"],
+      "responseTime": "2-4 недели",
+      "note": "Оценить ответ через 2-4 недели терапии"
+    }
+  },
+
+  "dha": {
+    "description": "Докозагексаеновая кислота (DHA, омега-3)",
+    "tradenames": ["DHA", "Омега-3", "Рыбий жир (очищенный)"],
+    "forms": ["капсулы", "жидкая форма"],
+
+    "indications": {
+      "required": {
+        "diagnoses": ["LCHAD", "TFP"],
+        "description": "Обязательно для профилактики ретинопатии и нейропатии"
+      },
+      "optional": {
+        "diagnoses": ["VLCAD"],
+        "description": "Рекомендуется при симптоматических формах"
+      }
+    },
+
+    "dosing": {
+      "infants": {
+        "ageFrom": 0,
+        "ageTo": 12,
+        "unit": "месяцев",
+        "dose": {
+          "min": 60,
+          "max": 130,
+          "unit": "мг/сут"
+        },
+        "note": "Может входить в состав специализированной смеси"
+      },
+      "children1to3": {
+        "ageFrom": 1,
+        "ageTo": 3,
+        "unit": "лет",
+        "dose": {
+          "min": 100,
+          "max": 150,
+          "unit": "мг/сут"
+        }
+      },
+      "children3to10": {
+        "ageFrom": 3,
+        "ageTo": 10,
+        "unit": "лет",
+        "dose": {
+          "min": 150,
+          "max": 250,
+          "unit": "мг/сут"
+        }
+      },
+      "adolescentsAndAdults": {
+        "ageFrom": 10,
+        "ageTo": 100,
+        "unit": "лет",
+        "dose": {
+          "min": 250,
+          "max": 500,
+          "unit": "мг/сут"
+        }
+      }
+    },
+
+    "precautions": [
+      "Использовать очищенные препараты (без EPA, без LCT)",
+      "Избегать рыбьего жира с высоким содержанием LCT",
+      "Предпочтительны препараты из водорослей (без LCT)"
+    ],
+
+    "monitoring": {
+      "parameters": ["осмотр офтальмолога", "электроретинография"],
+      "frequency": "ежегодно"
+    }
+  },
+
+  "coq10": {
+    "description": "Коэнзим Q10 (убихинон)",
+    "tradenames": ["Кудесан", "CoQ10"],
+    "forms": ["капсулы", "капли"],
+
+    "indications": {
+      "optional": {
+        "diagnoses": ["GA2", "VLCAD", "LCHAD", "TFP"],
+        "description": "Антиоксидантная поддержка, улучшение митохондриальной функции"
+      }
+    },
+
+    "dosing": {
+      "children": {
+        "doseMin": 5,
+        "doseMax": 15,
+        "unit": "мг/кг/сут",
+        "maxDailyDose": 300,
+        "maxUnit": "мг/сут"
+      },
+      "adults": {
+        "doseMin": 100,
+        "doseMax": 300,
+        "unit": "мг/сут"
+      }
+    }
+  },
+
+  "glycine": {
+    "description": "Глицин",
+    "indications": {
+      "optional": {
+        "diagnoses": ["GA2"],
+        "description": "Связывание токсичных метаболитов"
+      }
+    },
+    "dosing": {
+      "dose": {
+        "min": 150,
+        "max": 300,
+        "unit": "мг/кг/сут"
+      },
+      "frequency": "3 раза в день"
+    }
+  },
+
+  "bezafibrate": {
+    "description": "Безафибрат",
+    "tradenames": ["Безафибрат"],
+    "forms": ["таблетки 200 мг"],
+
+    "indications": {
+      "experimental": {
+        "diagnoses": ["CPT2_LATE_MUSCULAR", "VLCAD"],
+        "description": "Экспериментальная терапия при мышечных формах"
+      }
+    },
+
+    "dosing": {
+      "adults": {
+        "dose": {
+          "min": 200,
+          "max": 400,
+          "unit": "мг/сут"
+        },
+        "frequency": "1-2 раза в день",
+        "note": "Только под наблюдением специалиста"
+      }
+    },
+
+    "precautions": [
+      "Контроль КФК",
+      "Контроль функции почек",
+      "Не применять у детей без согласования с экспертным центром"
+    ]
+  },
+
+  "triheptanoin": {
+    "description": "Тригептаноин (C7 жирная кислота)",
+    "tradenames": ["Dojolvi"],
+    "forms": ["масло для приёма внутрь"],
+
+    "indications": {
+      "experimental": {
+        "diagnoses": ["LCHAD", "TFP", "VLCAD"],
+        "description": "Анаплеротическая терапия (восполнение цикла Кребса)"
+      }
+    },
+
+    "dosing": {
+      "dose": {
+        "min": 25,
+        "max": 35,
+        "unit": "% от калорийности"
+      },
+      "note": "Вводится постепенно, замещая часть MCT. Доступность ограничена."
+    },
+
+    "availability": "Не зарегистрирован в РФ. Возможен ввоз по жизненным показаниям."
+  },
+
+  "emergencyProtocol": {
+    "description": "Экстренная терапия при метаболическом кризе",
+    "medications": [
+      {
+        "name": "Глюкоза 10%",
+        "route": "в/в",
+        "rate": {
+          "infants": "10-12 мг/кг/мин",
+          "children": "8-10 мг/кг/мин",
+          "adolescents": "5-8 мг/кг/мин"
+        },
+        "target": "гликемия > 4.0 ммоль/л"
+      },
+      {
+        "name": "L-карнитин",
+        "route": "в/в",
+        "dose": "100-200 мг/кг/сут",
+        "contraindications": ["VLCAD_SYMPTOMATIC", "LCHAD", "TFP"]
+      },
+      {
+        "name": "Натрия бикарбонат",
+        "route": "в/в",
+        "indication": "При метаболическом ацидозе (pH < 7.2)",
+        "dose": "1-2 мэкв/кг"
+      }
+    ],
+
+    "hospitalIndications": [
+      "Невозможность перорального питания",
+      "Рвота более 2 раз",
+      "Отказ от еды более 4-6 часов",
+      "Гипогликемия < 3.0 ммоль/л",
+      "Нарушение сознания",
+      "Судороги",
+      "Выраженная мышечная слабость"
+    ]
+  },
+
+  "supplements": {
+    "description": "Витамины и микроэлементы",
+    "fatSolubleVitamins": {
+      "indication": "При строгом ограничении жиров (LCHAD, TFP, VLCAD)",
+      "vitamins": [
+        {
+          "name": "Витамин A",
+          "dose": "1500-3000 МЕ/сут",
+          "note": "По возрасту"
+        },
+        {
+          "name": "Витамин D",
+          "dose": "400-1000 МЕ/сут",
+          "note": "По возрасту и уровню 25(OH)D"
+        },
+        {
+          "name": "Витамин E",
+          "dose": "5-15 мг/сут",
+          "note": "По возрасту"
+        },
+        {
+          "name": "Витамин K",
+          "dose": "По показаниям",
+          "note": "При нарушении свёртывания"
+        }
+      ]
+    },
+    "essentialFattyAcids": {
+      "indication": "При строгом ограничении LCT",
+      "note": "См. efa_norms.json"
+    }
+  }
+}

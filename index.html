@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор диетотерапии FAOD</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Заголовок -->
+    <header class="header">
+      <h1>Калькулятор диетотерапии FAOD</h1>
+      <p class="subtitle">Нарушения митохондриального &beta;-окисления жирных кислот (МКБ E71.3)</p>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main">
+      <!-- Форма ввода данных -->
+      <section class="input-section">
+        <form id="calculator-form">
+
+          <!-- Блок 1: Данные пациента -->
+          <fieldset class="form-block">
+            <legend>
+              <span class="block-number">1</span>
+              Данные пациента
+            </legend>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="birthDate">Дата рождения <span class="required">*</span></label>
+                <input type="date" id="birthDate" name="birthDate" required>
+              </div>
+
+              <div class="form-group">
+                <label for="calculationDate">Дата расчёта</label>
+                <input type="date" id="calculationDate" name="calculationDate">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="weight">Масса тела (кг) <span class="required">*</span></label>
+                <input type="number" id="weight" name="weight" step="0.1" min="0.5" max="300" required placeholder="Например: 7.5">
+              </div>
+
+              <div class="form-group">
+                <label for="sex">Пол <span class="required">*</span></label>
+                <select id="sex" name="sex" required>
+                  <option value="">Выберите...</option>
+                  <option value="male">Мужской</option>
+                  <option value="female">Женский</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="age-display" id="ageDisplay">
+              <!-- Возраст будет рассчитан автоматически -->
+            </div>
+          </fieldset>
+
+          <!-- Блок 2: Диагноз -->
+          <fieldset class="form-block">
+            <legend>
+              <span class="block-number">2</span>
+              Диагноз
+            </legend>
+
+            <div class="form-group">
+              <label for="diagnosis">Диагноз <span class="required">*</span></label>
+              <select id="diagnosis" name="diagnosis" required>
+                <option value="">Выберите диагноз...</option>
+                <optgroup label="Нарушения транспорта">
+                  <option value="OCTN2">Первичный дефицит карнитина (OCTN2)</option>
+                  <option value="CPT1">Дефицит CPT1</option>
+                  <option value="CACT">Дефицит CACT</option>
+                  <option value="CPT2">Дефицит CPT2</option>
+                </optgroup>
+                <optgroup label="Нарушения β-окисления">
+                  <option value="SCAD">Дефицит SCAD</option>
+                  <option value="MCAD">Дефицит MCAD</option>
+                  <option value="VLCAD">Дефицит VLCAD</option>
+                  <option value="SCHAD">Дефицит SCHAD</option>
+                  <option value="LCHAD">Дефицит LCHAD</option>
+                  <option value="TFP">Дефицит TFP</option>
+                  <option value="GA2">Глутаровая ацидурия тип 2 (ГА2/MADD)</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <!-- Клиническая форма (появляется для CPT2, VLCAD, GA2) -->
+            <div class="form-group hidden" id="clinicalFormGroup">
+              <label for="clinicalForm">Клиническая форма <span class="required">*</span></label>
+              <select id="clinicalForm" name="clinicalForm">
+                <option value="">Выберите форму...</option>
+              </select>
+            </div>
+
+            <!-- Информация о диагнозе -->
+            <div class="diagnosis-info hidden" id="diagnosisInfo">
+              <div class="info-card">
+                <h4 id="diagnosisName"></h4>
+                <p id="diagnosisDescription"></p>
+                <div class="diagnosis-tags" id="diagnosisTags"></div>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Блок 3: Текущее состояние -->
+          <fieldset class="form-block">
+            <legend>
+              <span class="block-number">3</span>
+              Текущее состояние
+            </legend>
+
+            <div class="form-group">
+              <label>Состояние пациента <span class="required">*</span></label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="condition" value="stable" checked>
+                  <span class="radio-custom"></span>
+                  <span class="radio-text">
+                    <strong>Стабильное состояние</strong>
+                    <small>Обычный режим питания</small>
+                  </span>
+                </label>
+
+                <label class="radio-label warning">
+                  <input type="radio" name="condition" value="intercurrent">
+                  <span class="radio-custom"></span>
+                  <span class="radio-text">
+                    <strong>Интеркуррентное заболевание</strong>
+                    <small>ОРВИ, гастроэнтерит, лихорадка</small>
+                  </span>
+                </label>
+
+                <label class="radio-label danger">
+                  <input type="radio" name="condition" value="crisis">
+                  <span class="radio-custom"></span>
+                  <span class="radio-text">
+                    <strong>Метаболический криз</strong>
+                    <small>Экстренный режим!</small>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Предупреждение при кризе -->
+            <div class="alert alert-danger hidden" id="crisisAlert">
+              <strong>Внимание!</strong> При метаболическом кризе требуется экстренная помощь.
+              Рассмотрите необходимость госпитализации.
+            </div>
+          </fieldset>
+
+          <!-- Блок 4: Дополнительные параметры -->
+          <fieldset class="form-block">
+            <legend>
+              <span class="block-number">4</span>
+              Дополнительно
+            </legend>
+
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" name="isBreastfed" id="isBreastfed">
+                <span class="checkbox-custom"></span>
+                <span>Грудное вскармливание</span>
+              </label>
+
+              <label class="checkbox-label">
+                <input type="checkbox" name="hasHypoglycemiaHistory" id="hasHypoglycemiaHistory">
+                <span class="checkbox-custom"></span>
+                <span>Гипогликемия в анамнезе</span>
+              </label>
+
+              <label class="checkbox-label">
+                <input type="checkbox" name="hasCardiomyopathy" id="hasCardiomyopathy">
+                <span class="checkbox-custom"></span>
+                <span>Кардиомиопатия</span>
+              </label>
+
+              <label class="checkbox-label">
+                <input type="checkbox" name="hasLiverDisease" id="hasLiverDisease">
+                <span class="checkbox-custom"></span>
+                <span>Поражение печени</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <!-- Кнопки -->
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="calculateBtn">
+              <span class="btn-icon">&#9654;</span>
+              Рассчитать
+            </button>
+            <button type="reset" class="btn btn-secondary" id="resetBtn">
+              Очистить
+            </button>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- Раздел результатов -->
+      <section class="results-section hidden" id="resultsSection">
+        <!-- Результаты будут вставлены сюда через JavaScript -->
+      </section>
+
+    </main>
+
+    <!-- Подвал -->
+    <footer class="footer">
+      <p>Основа: Клинические рекомендации РФ 2024 «Нарушения митохондриального &beta;-окисления жирных кислот»</p>
+      <p class="disclaimer">
+        Калькулятор предназначен для медицинских специалистов.
+        Все расчёты требуют верификации врачом.
+      </p>
+    </footer>
+  </div>
+
+  <!-- Модальное окно загрузки -->
+  <div class="modal hidden" id="loadingModal">
+    <div class="modal-content">
+      <div class="spinner"></div>
+      <p>Загрузка данных...</p>
+    </div>
+  </div>
+
+  <!-- Модальное окно ошибки -->
+  <div class="modal hidden" id="errorModal">
+    <div class="modal-content modal-error">
+      <h3>Ошибка</h3>
+      <p id="errorMessage"></p>
+      <button class="btn btn-primary" onclick="closeErrorModal()">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Скрипты -->
+  <script src="js/utils.js"></script>
+  <script src="js/calculator.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

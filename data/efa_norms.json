@@ -1,0 +1,394 @@
+{
+  "description": "Нормы потребления незаменимых жирных кислот (НЖК/EFA)",
+  "source": "FAO/WHO 2010, Клинические рекомендации РФ 2024",
+
+  "essentialFattyAcids": {
+    "description": "Незаменимые жирные кислоты — обязательный компонент диеты при ограничении LCT",
+
+    "linoleicAcid": {
+      "name": "Линолевая кислота",
+      "abbreviation": "LA",
+      "type": "omega-6",
+      "carbonChain": "C18:2",
+      "unit": "% от калорийности",
+      "norms": [
+        {
+          "ageGroup": "infants_0-6",
+          "ageMonthsFrom": 0,
+          "ageMonthsTo": 6,
+          "percentMin": 3.0,
+          "percentMax": 4.5,
+          "recommended": 4.0,
+          "mgPerKgMin": 300,
+          "mgPerKgMax": 500,
+          "note": "Особенно важно при грудном вскармливании/смеси"
+        },
+        {
+          "ageGroup": "infants_6-12",
+          "ageMonthsFrom": 6,
+          "ageMonthsTo": 12,
+          "percentMin": 3.0,
+          "percentMax": 4.5,
+          "recommended": 3.5,
+          "mgPerKgMin": 250,
+          "mgPerKgMax": 400
+        },
+        {
+          "ageGroup": "toddlers",
+          "ageMonthsFrom": 12,
+          "ageMonthsTo": 36,
+          "percentMin": 2.5,
+          "percentMax": 4.0,
+          "recommended": 3.0,
+          "mgPerKgMin": 200,
+          "mgPerKgMax": 350
+        },
+        {
+          "ageGroup": "children_3-10",
+          "ageYearsFrom": 3,
+          "ageYearsTo": 10,
+          "percentMin": 2.0,
+          "percentMax": 3.0,
+          "recommended": 2.5,
+          "mgPerKgMin": 150,
+          "mgPerKgMax": 250
+        },
+        {
+          "ageGroup": "adolescents",
+          "ageYearsFrom": 10,
+          "ageYearsTo": 18,
+          "percentMin": 2.0,
+          "percentMax": 3.0,
+          "recommended": 2.0,
+          "absoluteMin": 8000,
+          "absoluteMax": 12000,
+          "unit": "мг/сут"
+        },
+        {
+          "ageGroup": "adults",
+          "ageYearsFrom": 18,
+          "ageYearsTo": 100,
+          "percentMin": 2.0,
+          "percentMax": 3.0,
+          "recommended": 2.0,
+          "absoluteMin": 10000,
+          "absoluteMax": 15000,
+          "unit": "мг/сут"
+        }
+      ]
+    },
+
+    "alphaLinolenicAcid": {
+      "name": "Альфа-линоленовая кислота",
+      "abbreviation": "ALA",
+      "type": "omega-3",
+      "carbonChain": "C18:3",
+      "unit": "% от калорийности",
+      "norms": [
+        {
+          "ageGroup": "infants_0-6",
+          "ageMonthsFrom": 0,
+          "ageMonthsTo": 6,
+          "percentMin": 0.4,
+          "percentMax": 0.6,
+          "recommended": 0.5,
+          "mgPerKgMin": 50,
+          "mgPerKgMax": 80
+        },
+        {
+          "ageGroup": "infants_6-12",
+          "ageMonthsFrom": 6,
+          "ageMonthsTo": 12,
+          "percentMin": 0.4,
+          "percentMax": 0.6,
+          "recommended": 0.5,
+          "mgPerKgMin": 45,
+          "mgPerKgMax": 70
+        },
+        {
+          "ageGroup": "toddlers",
+          "ageMonthsFrom": 12,
+          "ageMonthsTo": 36,
+          "percentMin": 0.4,
+          "percentMax": 0.6,
+          "recommended": 0.5,
+          "mgPerKgMin": 40,
+          "mgPerKgMax": 60
+        },
+        {
+          "ageGroup": "children_3-10",
+          "ageYearsFrom": 3,
+          "ageYearsTo": 10,
+          "percentMin": 0.4,
+          "percentMax": 0.6,
+          "recommended": 0.5,
+          "absoluteMin": 700,
+          "absoluteMax": 1200,
+          "unit": "мг/сут"
+        },
+        {
+          "ageGroup": "adolescents",
+          "ageYearsFrom": 10,
+          "ageYearsTo": 18,
+          "percentMin": 0.4,
+          "percentMax": 0.6,
+          "recommended": 0.5,
+          "absoluteMin": 1000,
+          "absoluteMax": 1600,
+          "unit": "мг/сут"
+        },
+        {
+          "ageGroup": "adults",
+          "ageYearsFrom": 18,
+          "ageYearsTo": 100,
+          "percentMin": 0.4,
+          "percentMax": 0.6,
+          "recommended": 0.5,
+          "absoluteMin": 1100,
+          "absoluteMax": 1600,
+          "unit": "мг/сут"
+        }
+      ]
+    },
+
+    "dha": {
+      "name": "Докозагексаеновая кислота",
+      "abbreviation": "DHA",
+      "type": "omega-3 LC-PUFA",
+      "carbonChain": "C22:6",
+      "requiredFor": ["LCHAD", "TFP"],
+      "recommendedFor": ["VLCAD"],
+      "norms": [
+        {
+          "ageGroup": "infants_0-6",
+          "ageMonthsFrom": 0,
+          "ageMonthsTo": 6,
+          "mgPerDay": { "min": 60, "max": 100, "recommended": 80 },
+          "percentOfFat": { "min": 0.2, "max": 0.5 },
+          "note": "Должна входить в состав смеси для LCHAD/TFP"
+        },
+        {
+          "ageGroup": "infants_6-12",
+          "ageMonthsFrom": 6,
+          "ageMonthsTo": 12,
+          "mgPerDay": { "min": 80, "max": 130, "recommended": 100 },
+          "note": "Добавлять в прикорм или давать отдельно"
+        },
+        {
+          "ageGroup": "toddlers",
+          "ageMonthsFrom": 12,
+          "ageMonthsTo": 36,
+          "mgPerDay": { "min": 100, "max": 150, "recommended": 120 }
+        },
+        {
+          "ageGroup": "children_3-10",
+          "ageYearsFrom": 3,
+          "ageYearsTo": 10,
+          "mgPerDay": { "min": 150, "max": 250, "recommended": 200 }
+        },
+        {
+          "ageGroup": "adolescents",
+          "ageYearsFrom": 10,
+          "ageYearsTo": 18,
+          "mgPerDay": { "min": 200, "max": 400, "recommended": 300 }
+        },
+        {
+          "ageGroup": "adults",
+          "ageYearsFrom": 18,
+          "ageYearsTo": 100,
+          "mgPerDay": { "min": 250, "max": 500, "recommended": 400 }
+        }
+      ],
+      "sources": [
+        {
+          "name": "Препараты DHA из водорослей",
+          "preferred": true,
+          "note": "Не содержат LCT, подходят для LCHAD/TFP"
+        },
+        {
+          "name": "Очищенный рыбий жир",
+          "preferred": false,
+          "note": "Содержит LCT, использовать с осторожностью"
+        }
+      ]
+    },
+
+    "arachidonicAcid": {
+      "name": "Арахидоновая кислота",
+      "abbreviation": "ARA/AA",
+      "type": "omega-6 LC-PUFA",
+      "carbonChain": "C20:4",
+      "norms": [
+        {
+          "ageGroup": "infants_0-12",
+          "ageMonthsFrom": 0,
+          "ageMonthsTo": 12,
+          "mgPerDay": { "min": 40, "max": 100, "recommended": 60 },
+          "note": "Важна для развития мозга. Обычно достаточно синтеза из LA."
+        },
+        {
+          "ageGroup": "older",
+          "ageMonthsFrom": 12,
+          "ageMonthsTo": 1200,
+          "note": "Синтезируется из линолевой кислоты при достаточном потреблении LA"
+        }
+      ]
+    },
+
+    "epa": {
+      "name": "Эйкозапентаеновая кислота",
+      "abbreviation": "EPA",
+      "type": "omega-3 LC-PUFA",
+      "carbonChain": "C20:5",
+      "note": "Синтезируется из ALA. Дополнительный приём обычно не требуется.",
+      "caution": "Многие препараты EPA содержат LCT — использовать с осторожностью при LCHAD/TFP"
+    }
+  },
+
+  "ratios": {
+    "description": "Рекомендуемые соотношения жирных кислот",
+    "omega6toOmega3": {
+      "optimal": { "min": 5, "max": 10 },
+      "acceptable": { "min": 4, "max": 15 },
+      "unit": "LA:ALA",
+      "note": "Соотношение омега-6 к омега-3 должно быть 5-10:1"
+    },
+    "laToAla": {
+      "description": "Линолевая : альфа-линоленовая",
+      "optimal": { "min": 5, "max": 10 }
+    }
+  },
+
+  "calculationFormulas": {
+    "description": "Формулы расчёта потребности в НЖК",
+
+    "fromCalories": {
+      "linoleicAcid": {
+        "formula": "(totalKcal * percentLA / 100) / 9",
+        "result": "граммы LA в сутки",
+        "note": "1 г жира = 9 ккал"
+      },
+      "alphaLinolenicAcid": {
+        "formula": "(totalKcal * percentALA / 100) / 9",
+        "result": "граммы ALA в сутки"
+      }
+    },
+
+    "fromWeight": {
+      "linoleicAcid": {
+        "formula": "weightKg * mgPerKg / 1000",
+        "result": "граммы LA в сутки"
+      },
+      "alphaLinolenicAcid": {
+        "formula": "weightKg * mgPerKg / 1000",
+        "result": "граммы ALA в сутки"
+      }
+    },
+
+    "example": {
+      "description": "Пример расчёта для ребёнка 6 мес, 7 кг, 600 ккал/сут",
+      "linoleicAcid": {
+        "byPercent": "(600 * 3.5 / 100) / 9 = 2.3 г/сут",
+        "byWeight": "7 * 350 / 1000 = 2.4 г/сут"
+      },
+      "alphaLinolenicAcid": {
+        "byPercent": "(600 * 0.5 / 100) / 9 = 0.33 г/сут",
+        "byWeight": "7 * 55 / 1000 = 0.38 г/сут"
+      }
+    }
+  },
+
+  "foodSources": {
+    "description": "Источники НЖК для пациентов с ограничением LCT",
+
+    "linoleicAcidRich": [
+      {
+        "food": "Масло грецкого ореха",
+        "laPer100g": 53000,
+        "unit": "мг/100 г",
+        "lctContent": "high",
+        "note": "Использовать в минимальных количествах"
+      },
+      {
+        "food": "Масло зародышей пшеницы",
+        "laPer100g": 55000,
+        "lctContent": "high"
+      },
+      {
+        "food": "Соевое масло",
+        "laPer100g": 51000,
+        "lctContent": "high"
+      }
+    ],
+
+    "alphaLinolenicAcidRich": [
+      {
+        "food": "Льняное масло",
+        "alaPer100g": 55000,
+        "unit": "мг/100 г",
+        "lctContent": "high",
+        "note": "Богато омега-3, использовать в минимальных количествах"
+      },
+      {
+        "food": "Масло чиа",
+        "alaPer100g": 18000,
+        "lctContent": "high"
+      },
+      {
+        "food": "Масло грецкого ореха",
+        "alaPer100g": 10000,
+        "lctContent": "high"
+      }
+    ],
+
+    "dhaRich": [
+      {
+        "food": "Препараты DHA из микроводорослей",
+        "dhaPer1g": 200,
+        "unit": "мг DHA на 1 г препарата",
+        "lctContent": "none",
+        "recommended": true,
+        "note": "Предпочтительный источник для LCHAD/TFP"
+      },
+      {
+        "food": "Жирная рыба (лосось, скумбрия)",
+        "dhaPer100g": 1500,
+        "unit": "мг/100 г",
+        "lctContent": "high",
+        "note": "Противопоказана при строгом ограничении LCT"
+      }
+    ]
+  },
+
+  "specialFormulas": {
+    "description": "Содержание НЖК в специализированных смесях",
+    "note": "Точные значения см. в formulas.json",
+
+    "adequacy": {
+      "description": "Проверка адекватности НЖК в смеси",
+      "checks": [
+        "LA ≥ 3% от калорийности",
+        "ALA ≥ 0.4% от калорийности",
+        "LA:ALA = 5-10:1",
+        "DHA ≥ 0.2% от жира (для LCHAD/TFP)"
+      ]
+    }
+  },
+
+  "deficiencySymptoms": {
+    "description": "Признаки дефицита незаменимых жирных кислот",
+    "symptoms": [
+      "Сухость кожи, шелушение",
+      "Экзема-подобные высыпания",
+      "Алопеция",
+      "Замедление роста",
+      "Нарушение заживления ран",
+      "Повышенная восприимчивость к инфекциям"
+    ],
+    "dhaDeficiency": {
+      "symptoms": ["Нарушение зрения", "Задержка психомоторного развития"],
+      "relevantFor": ["LCHAD", "TFP"]
+    },
+    "monitoring": "Контроль профиля жирных кислот в плазме каждые 6-12 месяцев"
+  }
+}

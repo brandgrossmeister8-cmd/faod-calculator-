@@ -1,0 +1,246 @@
+{
+  "description": "Специализированные смеси для диетотерапии FAOD",
+  "source": "Клинические рекомендации РФ 2024, инструкции производителей",
+
+  "categories": {
+    "mctEnriched": {
+      "description": "Смеси, обогащённые MCT (для LCHAD, TFP, VLCAD, CACT, CPT2)",
+      "formulas": [
+        {
+          "name": "Нутриген 40-MCT",
+          "manufacturer": "Инфаприм",
+          "country": "Россия",
+          "ageFrom": 0,
+          "ageTo": 12,
+          "unit": "месяцев",
+          "per100g": {
+            "energy": 478,
+            "protein": 13.0,
+            "fat": 21.0,
+            "mct": 17.0,
+            "lct": 4.0,
+            "carbs": 58.0,
+            "linoleicAcid": 2.8,
+            "alphaLinolenicAcid": 0.35,
+            "dha": 0.06,
+            "ara": 0.06
+          },
+          "mctPercent": 81,
+          "indications": ["LCHAD", "TFP", "VLCAD_SYMPTOMATIC", "CACT", "CPT2_NEONATAL", "CPT2_INFANTILE"],
+          "note": "Основная смесь для тяжёлых форм FAOD у детей до 1 года"
+        },
+        {
+          "name": "Моноген",
+          "manufacturer": "Nutricia",
+          "country": "Нидерланды",
+          "ageFrom": 0,
+          "ageTo": 36,
+          "unit": "месяцев",
+          "per100g": {
+            "energy": 475,
+            "protein": 11.5,
+            "fat": 21.5,
+            "mct": 18.5,
+            "lct": 3.0,
+            "carbs": 59.0,
+            "linoleicAcid": 2.1,
+            "alphaLinolenicAcid": 0.21,
+            "dha": 0.04,
+            "ara": 0.04
+          },
+          "mctPercent": 86,
+          "indications": ["LCHAD", "TFP", "VLCAD_SYMPTOMATIC", "CACT", "CPT2_NEONATAL", "CPT2_INFANTILE"],
+          "note": "Высокое содержание MCT, минимум LCT"
+        },
+        {
+          "name": "Ликвиген",
+          "manufacturer": "Nutricia",
+          "country": "Нидерланды",
+          "ageFrom": 0,
+          "ageTo": 216,
+          "unit": "месяцев",
+          "type": "mctModule",
+          "per100ml": {
+            "energy": 492,
+            "fat": 54.7,
+            "mct": 54.7,
+            "lct": 0
+          },
+          "mctPercent": 100,
+          "indications": ["LCHAD", "TFP", "VLCAD", "CACT", "CPT2"],
+          "note": "Модуль MCT для обогащения питания. Добавлять в смеси или блюда."
+        }
+      ]
+    },
+
+    "lowFat": {
+      "description": "Низкожировые смеси (для CPT1, GA2)",
+      "formulas": [
+        {
+          "name": "Basic-F",
+          "manufacturer": "Milupa",
+          "country": "Германия",
+          "ageFrom": 0,
+          "ageTo": 36,
+          "unit": "месяцев",
+          "per100g": {
+            "energy": 410,
+            "protein": 18.0,
+            "fat": 0.5,
+            "mct": 0,
+            "lct": 0.5,
+            "carbs": 76.0
+          },
+          "fatPercent": 1,
+          "indications": ["CPT1", "GA2"],
+          "note": "Практически безжировая смесь"
+        }
+      ]
+    },
+
+    "standard": {
+      "description": "Стандартные смеси (для OCTN2, SCAD, MCAD)",
+      "formulas": [
+        {
+          "name": "Любая стандартная смесь",
+          "description": "Грудное молоко или стандартная адаптированная смесь",
+          "indications": ["OCTN2", "SCAD", "MCAD"],
+          "note": "Специализированная смесь не требуется. Для MCAD избегать смесей с MCT."
+        }
+      ]
+    },
+
+    "mctOils": {
+      "description": "MCT-масла для обогащения питания",
+      "products": [
+        {
+          "name": "Кансо MCT 83%",
+          "manufacturer": "Dr. Schär",
+          "country": "Италия",
+          "per100g": {
+            "energy": 759,
+            "fat": 83.0,
+            "mct": 83.0,
+            "lct": 0
+          },
+          "mctPercent": 100,
+          "form": "масло",
+          "indications": ["LCHAD", "TFP", "VLCAD", "CACT", "CPT2"],
+          "contraindications": ["MCAD", "GA2"],
+          "note": "Добавлять в готовые блюда. Не нагревать выше 180°C."
+        },
+        {
+          "name": "MCT Oil 100%",
+          "manufacturer": "различные",
+          "per100g": {
+            "energy": 830,
+            "fat": 100.0,
+            "mct": 100.0,
+            "lct": 0
+          },
+          "mctPercent": 100,
+          "form": "масло",
+          "indications": ["LCHAD", "TFP", "VLCAD", "CACT", "CPT2"],
+          "contraindications": ["MCAD", "GA2"],
+          "note": "Чистое MCT-масло"
+        }
+      ]
+    },
+
+    "efaSupplements": {
+      "description": "Препараты незаменимых жирных кислот",
+      "products": [
+        {
+          "name": "Уоллнат ойл (масло грецкого ореха)",
+          "per100g": {
+            "linoleicAcid": 53.0,
+            "alphaLinolenicAcid": 10.0
+          },
+          "dose": "1-2 мл/кг/сут",
+          "note": "Источник омега-6 и омега-3 для пациентов на строгой диете"
+        },
+        {
+          "name": "Льняное масло",
+          "per100g": {
+            "linoleicAcid": 15.0,
+            "alphaLinolenicAcid": 55.0
+          },
+          "dose": "0.5-1 мл/кг/сут",
+          "note": "Богато омега-3 (ALA)"
+        }
+      ]
+    }
+  },
+
+  "feedingCalculation": {
+    "description": "Расчёт объёма смеси",
+    "infantsUnder6Months": {
+      "volumeMLperKg": 150,
+      "note": "150 мл/кг/сут для детей до 6 месяцев"
+    },
+    "infants6to12Months": {
+      "volumeMLperKg": 120,
+      "note": "120 мл/кг/сут для детей 6-12 месяцев (с прикормом)"
+    },
+    "dilution": {
+      "standard": {
+        "powderGrams": 13,
+        "waterML": 90,
+        "resultML": 100,
+        "kcalPer100ml": 67
+      },
+      "concentrated": {
+        "powderGrams": 15,
+        "waterML": 85,
+        "resultML": 100,
+        "kcalPer100ml": 75,
+        "note": "При ограничении объёма жидкости"
+      }
+    }
+  },
+
+  "mixedFeedingProtocols": {
+    "description": "Протоколы смешанного вскармливания",
+    "VLCAD_ASYMPTOMATIC": {
+      "breastMilkPercent": 50,
+      "specialFormulaPercent": 50,
+      "note": "Чередовать кормления или смешивать в бутылочке"
+    },
+    "transitionToSolids": {
+      "startAge": 4,
+      "unit": "месяцев",
+      "principles": [
+        "Начинать с низкожировых овощей и каш",
+        "Избегать жирных продуктов",
+        "Мясо — только нежирные сорта (курица, индейка, кролик)",
+        "Рыба — нежирная белая рыба",
+        "Готовить на пару, варить, запекать без масла",
+        "MCT-масло добавлять в готовые блюда"
+      ]
+    }
+  },
+
+  "emergencyFormulas": {
+    "description": "Питание при метаболическом кризе",
+    "glucosePolymers": [
+      {
+        "name": "Мальтодекстрин",
+        "concentration": "20-25%",
+        "kcalPer100ml": 80,
+        "note": "Для экстренного углеводного питания"
+      },
+      {
+        "name": "Глюкоза",
+        "concentrations": ["15%", "20%", "25%", "30%"],
+        "note": "Концентрация по возрасту (см. feeding_intervals.json)"
+      }
+    ],
+    "fatFreeProtocol": {
+      "duration": "24-48 часов",
+      "lctPercent": 0,
+      "mctAllowed": true,
+      "carbsPercent": "70-80%",
+      "note": "Полное исключение LCT при кризе"
+    }
+  }
+}

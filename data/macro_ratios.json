@@ -1,0 +1,194 @@
+{
+  "description": "Соотношение макронутриентов по диагнозам (% от суточной калорийности)",
+  "source": "Клинические рекомендации РФ 2024, консенсус экспертов",
+
+  "normalDiet": {
+    "description": "Нормальная диета (здоровые дети)",
+    "fatPercent": 30,
+    "carbsPercent": 55,
+    "proteinPercent": 15
+  },
+
+  "diagnosisRatios": {
+    "OCTN2": {
+      "requiresDiet": false,
+      "dietDescription": "Нормальная диета. Основное лечение — левокарнитин.",
+      "fatPercent": { "min": 30, "max": 35, "recommended": 30 },
+      "mctPercent": { "min": 0, "max": 0, "recommended": 0 },
+      "lctPercent": { "min": 30, "max": 35, "recommended": 30 },
+      "carbsPercent": { "min": 50, "max": 55, "recommended": 55 },
+      "proteinPercent": { "min": 10, "max": 15, "recommended": 12 }
+    },
+
+    "CPT1": {
+      "requiresDiet": true,
+      "dietDescription": "Высокоуглеводная, низкожировая диета",
+      "fatPercent": { "min": 20, "max": 25, "recommended": 20 },
+      "mctPercent": { "min": 0, "max": 33, "recommended": 0, "note": "MCT по показаниям" },
+      "lctPercent": { "min": 20, "max": 25, "recommended": 20 },
+      "carbsPercent": { "min": 65, "max": 70, "recommended": 70 },
+      "proteinPercent": { "min": 8, "max": 10, "recommended": 10 }
+    },
+
+    "CACT": {
+      "requiresDiet": true,
+      "dietDescription": "Низкожировая диета с MCT (низкое содержание C10!)",
+      "fatPercent": { "min": 25, "max": 30, "recommended": 30 },
+      "mctPercent": { "min": 15, "max": 20, "recommended": 20, "note": "MCT с низким C10" },
+      "lctPercent": { "min": 5, "max": 10, "recommended": 10 },
+      "carbsPercent": { "min": 60, "max": 65, "recommended": 60 },
+      "proteinPercent": { "min": 8, "max": 10, "recommended": 10 }
+    },
+
+    "CPT2": {
+      "hasMultipleForms": true,
+      "forms": {
+        "CPT2_NEONATAL": {
+          "dietDescription": "Строгое ограничение LCT, высокое MCT",
+          "fatPercent": { "min": 25, "max": 30, "recommended": 30 },
+          "mctPercent": { "min": 20, "max": 25, "recommended": 20 },
+          "lctPercent": { "min": 5, "max": 10, "recommended": 10 },
+          "carbsPercent": { "min": 60, "max": 65, "recommended": 60 },
+          "proteinPercent": { "min": 8, "max": 10, "recommended": 10 }
+        },
+        "CPT2_INFANTILE": {
+          "dietDescription": "Строгое ограничение LCT, высокое MCT",
+          "fatPercent": { "min": 25, "max": 30, "recommended": 30 },
+          "mctPercent": { "min": 20, "max": 25, "recommended": 20 },
+          "lctPercent": { "min": 5, "max": 10, "recommended": 10 },
+          "carbsPercent": { "min": 60, "max": 65, "recommended": 60 },
+          "proteinPercent": { "min": 8, "max": 10, "recommended": 10 }
+        },
+        "CPT2_LATE_MUSCULAR": {
+          "dietDescription": "Высокоуглеводная диета, MCT при нагрузках",
+          "fatPercent": { "min": 15, "max": 20, "recommended": 20 },
+          "mctPercent": { "min": 5, "max": 10, "recommended": 7, "note": "1/3 от жиров" },
+          "lctPercent": { "min": 10, "max": 15, "recommended": 13 },
+          "carbsPercent": { "min": 65, "max": 75, "recommended": 70 },
+          "proteinPercent": { "min": 10, "max": 12, "recommended": 10 }
+        }
+      }
+    },
+
+    "SCAD": {
+      "requiresDiet": false,
+      "dietDescription": "Специальная диета не требуется. Избегать голодания.",
+      "fatPercent": { "min": 30, "max": 35, "recommended": 30 },
+      "mctPercent": { "min": 0, "max": 0, "recommended": 0 },
+      "lctPercent": { "min": 30, "max": 35, "recommended": 30 },
+      "carbsPercent": { "min": 50, "max": 55, "recommended": 55 },
+      "proteinPercent": { "min": 10, "max": 15, "recommended": 15 }
+    },
+
+    "MCAD": {
+      "requiresDiet": false,
+      "dietDescription": "Нормальная диета. MCT противопоказаны! Избегать голодания и кокосового масла.",
+      "fatPercent": { "min": 30, "max": 35, "recommended": 30 },
+      "mctPercent": { "min": 0, "max": 0, "recommended": 0, "contraindicated": true },
+      "lctPercent": { "min": 30, "max": 35, "recommended": 30 },
+      "carbsPercent": { "min": 50, "max": 55, "recommended": 55 },
+      "proteinPercent": { "min": 10, "max": 15, "recommended": 15 },
+      "warnings": ["MCT противопоказаны", "Избегать кокосового масла"]
+    },
+
+    "VLCAD": {
+      "hasMultipleForms": true,
+      "forms": {
+        "VLCAD_ASYMPTOMATIC": {
+          "dietDescription": "Умеренное ограничение жиров, обогащение MCT",
+          "fatPercent": { "min": 30, "max": 40, "recommended": 35 },
+          "mctPercent": { "min": 10, "max": 15, "recommended": 12 },
+          "lctPercent": { "min": 15, "max": 25, "recommended": 23 },
+          "carbsPercent": { "min": 50, "max": 60, "recommended": 55 },
+          "proteinPercent": { "min": 10, "max": 15, "recommended": 10 }
+        },
+        "VLCAD_SYMPTOMATIC": {
+          "dietDescription": "Строгое ограничение LCT, высокое MCT",
+          "fatPercent": { "min": 25, "max": 30, "recommended": 30 },
+          "mctPercent": { "min": 20, "max": 25, "recommended": 20 },
+          "lctPercent": { "min": 5, "max": 10, "recommended": 10 },
+          "carbsPercent": { "min": 60, "max": 65, "recommended": 60 },
+          "proteinPercent": { "min": 10, "max": 15, "recommended": 10 }
+        }
+      }
+    },
+
+    "SCHAD": {
+      "requiresDiet": true,
+      "dietDescription": "Умеренное ограничение жиров",
+      "fatPercent": { "min": 25, "max": 30, "recommended": 30 },
+      "mctPercent": { "min": 0, "max": 0, "recommended": 0 },
+      "lctPercent": { "min": 25, "max": 30, "recommended": 30 },
+      "carbsPercent": { "min": 60, "max": 65, "recommended": 60 },
+      "proteinPercent": { "min": 8, "max": 10, "recommended": 10 },
+      "note": "Может потребоваться лечение гиперинсулинизма (диазоксид)"
+    },
+
+    "LCHAD": {
+      "requiresDiet": true,
+      "dietDescription": "Строгое ограничение LCT (только НЖК!), высокое MCT, обязательно DHA",
+      "fatPercent": { "min": 25, "max": 30, "recommended": 30 },
+      "mctPercent": { "min": 20, "max": 25, "recommended": 22 },
+      "lctPercent": { "min": 3, "max": 5, "recommended": 4, "note": "Только незаменимые ЖК!" },
+      "carbsPercent": { "min": 55, "max": 65, "recommended": 60 },
+      "proteinPercent": { "min": 10, "max": 15, "recommended": 10 },
+      "warnings": ["LCT минимизировать — только НЖК", "DHA обязательна"]
+    },
+
+    "TFP": {
+      "requiresDiet": true,
+      "dietDescription": "Строгое ограничение LCT (только НЖК!), высокое MCT, обязательно DHA",
+      "fatPercent": { "min": 25, "max": 30, "recommended": 30 },
+      "mctPercent": { "min": 20, "max": 25, "recommended": 22 },
+      "lctPercent": { "min": 3, "max": 5, "recommended": 4, "note": "Только незаменимые ЖК!" },
+      "carbsPercent": { "min": 55, "max": 65, "recommended": 60 },
+      "proteinPercent": { "min": 10, "max": 15, "recommended": 10 },
+      "warnings": ["LCT минимизировать — только НЖК", "DHA обязательна"]
+    },
+
+    "GA2": {
+      "requiresDiet": true,
+      "dietDescription": "Низкожировая, низкобелковая диета. MCT противопоказаны!",
+      "fatPercent": { "min": 20, "max": 25, "recommended": 25 },
+      "mctPercent": { "min": 0, "max": 0, "recommended": 0, "contraindicated": true },
+      "lctPercent": { "min": 20, "max": 25, "recommended": 25 },
+      "carbsPercent": { "min": 65, "max": 70, "recommended": 65 },
+      "proteinPercent": { "min": 8, "max": 10, "recommended": 10, "note": "Ограничение Ile, Leu, Lys, Trp, Val" },
+      "warnings": ["MCT противопоказаны!", "Рибофлавин 100-200 мг/сут"]
+    }
+  },
+
+  "infantFeeding": {
+    "description": "Особенности вскармливания детей до 4 месяцев",
+    "fullFormulaRequired": {
+      "diagnoses": ["LCHAD", "TFP", "VLCAD_SYMPTOMATIC", "CACT", "CPT2_NEONATAL", "CPT2_INFANTILE"],
+      "description": "100% специализированная низкожировая смесь"
+    },
+    "mixedFeeding": {
+      "diagnoses": ["VLCAD_ASYMPTOMATIC"],
+      "description": "50% грудное молоко/смесь + 50% специализированная смесь"
+    },
+    "normalFeeding": {
+      "diagnoses": ["OCTN2", "SCAD", "MCAD"],
+      "description": "Грудное вскармливание или обычная смесь"
+    }
+  },
+
+  "crisisAdjustments": {
+    "description": "Коррекция диеты при метаболическом кризе",
+    "fatRestriction": {
+      "description": "Исключить натуральные жиры (LCT) на 24-48 часов",
+      "lctPercent": 0,
+      "mctAllowed": true,
+      "note": "Суточная потребность в жирах только за счёт MCT"
+    },
+    "carbsIncrease": {
+      "description": "Увеличить углеводы для предотвращения катаболизма",
+      "carbsPercent": { "min": 70, "max": 80 }
+    },
+    "energyIncrease": {
+      "description": "Калорийность +10-20% от нормы",
+      "multiplier": 1.15
+    }
+  }
+}
