@@ -211,7 +211,9 @@
     },
     "carbsIncrease": {
       "description": "Увеличить углеводы для предотвращения катаболизма",
-      "carbsPercent": { "min": 70, "max": 80 }
+      "min": 70,
+      "max": 80,
+      "recommended": 75
     },
     "energyIncrease": {
       "description": "Калорийность +10-20% от нормы",

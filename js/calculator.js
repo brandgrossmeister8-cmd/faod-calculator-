@@ -353,9 +353,9 @@ class FAODCalculator {
     // Расчёт в граммах
     const energyFactors = this.data.energyNorms.macronutrientEnergy;
 
-    const proteinPercent = effectiveRatios.proteinPercent.recommended;
-    const carbsPercent = effectiveRatios.carbsPercent.recommended || effectiveRatios.carbsPercent.min;
-    const fatPercent = effectiveRatios.fatPercent.recommended;
+    const proteinPercent = effectiveRatios.proteinPercent?.recommended || 12;
+    const carbsPercent = effectiveRatios.carbsPercent?.recommended || effectiveRatios.carbsPercent?.min || 55;
+    const fatPercent = effectiveRatios.fatPercent?.recommended || 30;
     const mctPercent = effectiveRatios.mctPercent?.recommended || 0;
     const lctPercent = effectiveRatios.lctPercent?.recommended || fatPercent;
 
@@ -814,7 +814,7 @@ class FAODCalculator {
     } else if (infantFeeding.normalFeeding.diagnoses.includes(effectiveForm) ||
                infantFeeding.normalFeeding.diagnoses.includes(diagnosis)) {
       result.feedingType = 'normal';
-      result.feedingDescription = 'Грудное молоко или стандартная смесь';
+      result.feedingDescription = 'Грудное молоко или обычная детская смесь';
 
       // Для MCAD — предупреждение о MCT
       if (diagnosis === 'MCAD') {
@@ -834,7 +834,7 @@ class FAODCalculator {
         result.mixedFeeding = { breastMilkPercent: 50, formulaPercent: 50 };
       } else {
         result.feedingType = 'normal';
-        result.feedingDescription = 'Грудное молоко или стандартная смесь';
+        result.feedingDescription = 'Грудное молоко или обычная детская смесь';
         return result;
       }
     }
