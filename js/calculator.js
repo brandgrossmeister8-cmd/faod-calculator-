@@ -322,10 +322,18 @@ class FAODCalculator {
     let ratios;
 
     // Обработка диагнозов с несколькими формами
-    if (ratioData.hasMultipleForms && clinicalForm) {
-      ratios = ratioData.forms[clinicalForm];
-      if (!ratios) {
-        throw new Error(`Неизвестная клиническая форма: ${clinicalForm}`);
+    if (ratioData.hasMultipleForms) {
+      if (clinicalForm && ratioData.forms[clinicalForm]) {
+        ratios = ratioData.forms[clinicalForm];
+      } else {
+        // Если форма не выбрана, используем первую доступную форму
+        const formIds = Object.keys(ratioData.forms);
+        if (formIds.length > 0) {
+          ratios = ratioData.forms[formIds[0]];
+          console.warn(`Клиническая форма не указана для ${diagnosis}, используется: ${formIds[0]}`);
+        } else {
+          throw new Error(`Нет данных о формах для ${diagnosis}`);
+        }
       }
     } else {
       ratios = ratioData;
