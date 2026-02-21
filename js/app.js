@@ -345,8 +345,11 @@ function displayResults(result) {
         <button class="btn btn-secondary" onclick="exportToPDF()" title="Открыть для печати в PDF">
           PDF
         </button>
-        <button class="btn btn-warning" onclick="exportParentMemo()" title="Памятка для родителей">
+        <button class="btn btn-warning" onclick="exportParentMemo()" title="Скачать памятку HTML">
           Памятка
+        </button>
+        <button class="btn btn-outline-warning" onclick="printParentMemo()" title="Печать памятки">
+          🖨️
         </button>
       </div>
     </div>

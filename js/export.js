@@ -740,10 +740,22 @@ const FAODExport = {
    */
   exportParentMemo(result) {
     const html = this.generateParentMemo(result);
-    const blob = new Blob([html], { type: 'application/msword' });
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     const diagnosis = result.patient?.diagnosis || 'FAOD';
-    const filename = `Памятка_FAOD_${diagnosis}_${new Date().toISOString().split('T')[0]}.doc`;
+    const filename = `Памятка_FAOD_${diagnosis}_${new Date().toISOString().split('T')[0]}.html`;
     this.downloadBlob(blob, filename);
+  },
+
+  /**
+   * Экспорт памятки в PDF (открытие для печати)
+   */
+  exportParentMemoPDF(result) {
+    const html = this.generateParentMemo(result);
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => printWindow.print(), 500);
   }
 };
 
@@ -777,5 +789,19 @@ function exportParentMemo() {
   } catch (error) {
     console.error('Ошибка генерации памятки:', error);
     showError('Ошибка генерации памятки: ' + error.message);
+  }
+}
+
+function printParentMemo() {
+  if (!currentResult) {
+    showError('Сначала выполните расчёт');
+    return;
+  }
+
+  try {
+    FAODExport.exportParentMemoPDF(currentResult);
+  } catch (error) {
+    console.error('Ошибка печати памятки:', error);
+    showError('Ошибка печати памятки: ' + error.message);
   }
 }
