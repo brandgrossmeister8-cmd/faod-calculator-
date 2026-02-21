@@ -15,7 +15,8 @@ class FAODCalculator {
       feedingIntervals: null,
       formulas: null,
       medications: null,
-      efaNorms: null
+      efaNorms: null,
+      complementaryFoods: null
     };
     this.loaded = false;
   }
@@ -32,7 +33,8 @@ class FAODCalculator {
         'feeding_intervals',
         'formulas',
         'medications',
-        'efa_norms'
+        'efa_norms',
+        'complementary_foods'
       ];
 
       const promises = files.map(file =>
@@ -58,6 +60,7 @@ class FAODCalculator {
       this.data.formulas = results[4];
       this.data.medications = results[5];
       this.data.efaNorms = results[6];
+      this.data.complementaryFoods = results[7];
 
       this.loaded = true;
       return true;
@@ -917,6 +920,472 @@ class FAODCalculator {
     }
 
     return warnings;
+  }
+
+  /**
+   * Расчёт детального меню по часам
+   */
+  calculateDetailedMenu(input) {
+    const { weight, diagnosis, clinicalForm, condition, breastfeeding } = input;
+    const ageInMonths = input.ageInMonths || this._calculateAgeInMonths(input.birthDate, input.calcDate);
+
+    const complementary = this.data.complementaryFoods;
+    const formulas = this.data.formulas;
+    const diagInfo = this.data.diagnoses.diagnoses[diagnosis];
+
+    // Определяем возрастную группу для меню
+    let ageGroup, portions;
+    if (ageInMonths < 4) {
+      ageGroup = 'infant0-4m';
+      portions = null; // Только смесь
+    } else if (ageInMonths < 6) {
+      ageGroup = 'infant4-6m';
+      portions = complementary.portionsByAge['4-6m'];
+    } else if (ageInMonths < 9) {
+      ageGroup = 'infant6-9m';
+      portions = complementary.portionsByAge['6-9m'];
+    } else if (ageInMonths < 12) {
+      ageGroup = 'infant9-12m';
+      portions = complementary.portionsByAge['9-12m'];
+    } else if (ageInMonths < 36) {
+      ageGroup = 'toddler1-3y';
+      portions = complementary.portionsByAge['1-3y'];
+    } else {
+      ageGroup = 'preschool3-6y';
+      portions = complementary.portionsByAge['3-6y'];
+    }
+
+    // Рассчитываем общую калорийность
+    const energy = this._calculateEnergy(ageInMonths, weight, input.sex, condition);
+    const macros = this._calculateMacros(energy.totalKcal, ageInMonths, diagnosis, clinicalForm, condition);
+
+    // Определяем тип смеси
+    const effectiveForm = clinicalForm || diagnosis;
+    let recommendedFormula = null;
+    let formulaType = 'standard';
+
+    if (['LCHAD', 'TFP', 'VLCAD_SYMPTOMATIC', 'CACT', 'CPT2_NEONATAL', 'CPT2_INFANTILE'].includes(effectiveForm)) {
+      formulaType = 'mctEnriched';
+      const mctFormulas = formulas.categories.mctEnriched.formulas.filter(f =>
+        ageInMonths >= f.ageFrom && ageInMonths <= (f.ageTo || 999)
+      );
+      recommendedFormula = mctFormulas.length > 0 ? mctFormulas[0] : null;
+    } else if (['GA2', 'CPT1'].includes(diagnosis)) {
+      formulaType = 'lowFat';
+      recommendedFormula = formulas.categories.lowFat.formulas[0];
+    }
+
+    // Расчёт объёма смеси
+    let formulaVolumePerDay;
+    if (ageInMonths < 6) {
+      formulaVolumePerDay = Math.round(weight * 150); // 150 мл/кг
+    } else if (ageInMonths < 12) {
+      formulaVolumePerDay = Math.round(weight * 120); // 120 мл/кг с прикормом
+    } else if (ageInMonths < 36) {
+      formulaVolumePerDay = 350; // Фиксированный объём
+    } else {
+      formulaVolumePerDay = 250; // После 3 лет
+    }
+
+    // Расчёт MCT-масла (если показано)
+    let mctOilPerDay = 0;
+    const mctAllowed = !diagInfo?.mctContraindicated;
+    if (mctAllowed && ['LCHAD', 'TFP', 'VLCAD', 'CACT', 'CPT2'].includes(diagnosis)) {
+      if (ageInMonths >= 6 && ageInMonths < 12) {
+        mctOilPerDay = Math.round(weight * 0.5); // ~0.5 мл/кг
+      } else if (ageInMonths >= 12 && ageInMonths < 36) {
+        mctOilPerDay = Math.round(weight * 0.8); // ~0.8 мл/кг
+      } else if (ageInMonths >= 36) {
+        mctOilPerDay = Math.round(weight * 1); // ~1 мл/кг
+      }
+    }
+
+    // Расчёт грудного молока (если смешанное вскармливание)
+    let breastMilkVolume = 0;
+    if (breastfeeding && ageInMonths < 12) {
+      if (['VLCAD_ASYMPTOMATIC', 'MCAD', 'SCAD', 'OCTN2', 'SCHAD'].includes(effectiveForm)) {
+        breastMilkVolume = Math.round(formulaVolumePerDay * 0.5); // 50% ГВ
+        formulaVolumePerDay = Math.round(formulaVolumePerDay * 0.5); // 50% смесь
+      }
+    }
+
+    // Генерируем расписание по часам
+    const schedule = this._generateFeedingSchedule(
+      ageGroup,
+      ageInMonths,
+      weight,
+      formulaVolumePerDay,
+      breastMilkVolume,
+      mctOilPerDay,
+      portions,
+      diagnosis,
+      effectiveForm,
+      recommendedFormula,
+      condition
+    );
+
+    // Подбираем конкретные продукты
+    const recommendedProducts = this._selectProducts(ageInMonths, diagnosis, effectiveForm);
+
+    return {
+      ageGroup,
+      energy,
+      macros,
+      formula: {
+        type: formulaType,
+        name: recommendedFormula?.name || 'Стандартная смесь',
+        volumePerDay: formulaVolumePerDay,
+        note: recommendedFormula?.note
+      },
+      breastMilk: breastMilkVolume > 0 ? {
+        volumePerDay: breastMilkVolume,
+        note: 'Чередовать с кормлениями смесью или смешивать'
+      } : null,
+      mctOil: mctOilPerDay > 0 ? {
+        volumePerDay: mctOilPerDay,
+        product: 'MCT-масло (Кансо 83% или Ликвиген)',
+        note: 'Добавлять в готовые блюда (каши, пюре)'
+      } : null,
+      schedule,
+      recommendedProducts,
+      warnings: this._generateWarnings(diagnosis, clinicalForm, condition)
+    };
+  }
+
+  /**
+   * Генерация расписания кормления по часам с детализацией БЖУ
+   */
+  _generateFeedingSchedule(ageGroup, ageInMonths, weight, formulaVolume, breastMilkVolume, mctOil, portions, diagnosis, effectiveForm, formula, condition) {
+    const meals = [];
+    const complementary = this.data.complementaryFoods;
+
+    // Получаем данные о смеси
+    let formulaData;
+    if (formula?.name === 'Моноген') {
+      formulaData = complementary.formulas.monogen;
+    } else if (formula?.name === 'Нутриген 40-MCT') {
+      formulaData = complementary.formulas.nutrigen40mct;
+    } else if (formula?.name === 'Basic-F') {
+      formulaData = complementary.formulas.basicF;
+    } else {
+      formulaData = complementary.formulas.standard;
+    }
+
+    const breastMilkData = complementary.formulas.breastMilk;
+
+    // Функция расчёта БЖУ для продукта
+    const calcNutrients = (per100, amountG) => ({
+      kcal: Math.round(per100.kcal * amountG / 100),
+      protein: Math.round(per100.protein * amountG / 100 * 10) / 10,
+      fat: Math.round((per100.fat || (per100.lct + per100.mct)) * amountG / 100 * 10) / 10,
+      carbs: Math.round(per100.carbs * amountG / 100 * 10) / 10,
+      lct: Math.round((per100.lct || 0) * amountG / 100 * 10) / 10
+    });
+
+    // Функция создания элемента меню с БЖУ
+    const createItem = (name, amountG, per100g, unit = 'г') => {
+      const nutrients = calcNutrients(per100g, amountG);
+      return {
+        name,
+        amount: `${amountG} ${unit}`,
+        nutrients
+      };
+    };
+
+    // Данные продуктов
+    const products = {
+      vegetables: {
+        kabachok: { name: 'ФрутоНяня Кабачок', per100g: { kcal: 20, protein: 0.8, fat: 0.1, carbs: 4.0, lct: 0.1 } },
+        broccoli: { name: 'ФрутоНяня Брокколи', per100g: { kcal: 25, protein: 2.0, fat: 0.3, carbs: 4.0, lct: 0.3 } },
+        cauliflower: { name: 'Heinz Цветная капуста', per100g: { kcal: 22, protein: 1.8, fat: 0.2, carbs: 3.5, lct: 0.2 } },
+        pumpkin: { name: 'ФрутоНяня Тыква', per100g: { kcal: 28, protein: 0.8, fat: 0.1, carbs: 6.0, lct: 0.1 } }
+      },
+      cereals: {
+        rice: { name: 'Heinz Рисовая безмолочная', per100g: { kcal: 370, protein: 7.0, fat: 0.8, carbs: 82.0, lct: 0.8 } },
+        buckwheat: { name: 'ФрутоНяня Гречневая безмолочная', per100g: { kcal: 360, protein: 11.0, fat: 1.2, carbs: 75.0, lct: 1.2 } },
+        corn: { name: 'Heinz Кукурузная безмолочная', per100g: { kcal: 375, protein: 6.0, fat: 1.0, carbs: 83.0, lct: 1.0 } }
+      },
+      meat: {
+        turkey: { name: 'ФрутоНяня Индейка', per100g: { kcal: 95, protein: 12.0, fat: 5.0, carbs: 0.5, lct: 5.0 } },
+        rabbit: { name: 'ФрутоНяня Кролик', per100g: { kcal: 90, protein: 13.0, fat: 4.0, carbs: 0.5, lct: 4.0 } },
+        chicken: { name: 'Heinz Цыплёнок', per100g: { kcal: 88, protein: 11.0, fat: 4.5, carbs: 0.8, lct: 4.5 } }
+      },
+      fruits: {
+        apple: { name: 'ФрутоНяня Яблоко', per100g: { kcal: 50, protein: 0.2, fat: 0.1, carbs: 12.0, lct: 0.1 } },
+        pear: { name: 'ФрутоНяня Груша', per100g: { kcal: 45, protein: 0.3, fat: 0.1, carbs: 10.5, lct: 0.1 } }
+      },
+      mct: { name: 'MCT-масло Кансо 83%', per100g: { kcal: 759, protein: 0, fat: 83, carbs: 0, lct: 0 } },
+      cornstarch: { name: 'Кукурузный крахмал', per100g: { kcal: 343, protein: 0.3, fat: 0.1, carbs: 85, lct: 0.1 } }
+    };
+
+    // Базовые расписания по возрасту
+    if (ageInMonths < 4) {
+      // 0-4 месяца: только смесь/ГВ
+      const totalVolume = formulaVolume + breastMilkVolume;
+      const feedingsCount = 8;
+      const volumePerFeeding = Math.round(totalVolume / feedingsCount);
+      const times = ['06:00', '09:00', '12:00', '15:00', '18:00', '21:00', '00:00', '03:00'];
+
+      times.forEach(time => {
+        const items = [];
+        if (breastMilkVolume > 0) {
+          const bmVol = Math.round(volumePerFeeding * 0.5);
+          items.push(createItem('Грудное молоко', bmVol, breastMilkData.per100ml, 'мл'));
+          items.push(createItem(formulaData.name, volumePerFeeding - bmVol, formulaData.per100ml, 'мл'));
+        } else {
+          items.push(createItem(formulaData.name, volumePerFeeding, formulaData.per100ml, 'мл'));
+        }
+        const total = this._sumNutrients(items);
+        meals.push({ time, type: 'formula', items, total });
+      });
+
+    } else if (ageInMonths < 6) {
+      // 4-6 месяцев: 5-6 кормлений, начало прикорма
+      const formulaPerFeeding = Math.round(formulaVolume / 5);
+
+      // 06:00 - Смесь
+      let items = [createItem(formulaData.name, formulaPerFeeding, formulaData.per100ml, 'мл')];
+      meals.push({ time: '06:00', type: 'formula', items, total: this._sumNutrients(items) });
+
+      // 10:00 - Смесь + каша
+      const cerealDry = 15; // г сухой каши
+      items = [
+        createItem(formulaData.name, Math.round(formulaPerFeeding * 0.6), formulaData.per100ml, 'мл'),
+        createItem(products.cereals.rice.name, cerealDry, products.cereals.rice.per100g)
+      ];
+      meals.push({ time: '10:00', type: 'cereal', items, total: this._sumNutrients(items) });
+
+      // 14:00 - Смесь + овощи
+      items = [
+        createItem(formulaData.name, Math.round(formulaPerFeeding * 0.6), formulaData.per100ml, 'мл'),
+        createItem(products.vegetables.kabachok.name, 50, products.vegetables.kabachok.per100g)
+      ];
+      meals.push({ time: '14:00', type: 'vegetables', items, total: this._sumNutrients(items) });
+
+      // 18:00 - Смесь
+      items = [createItem(formulaData.name, formulaPerFeeding, formulaData.per100ml, 'мл')];
+      meals.push({ time: '18:00', type: 'formula', items, total: this._sumNutrients(items) });
+
+      // 21:00 - Смесь
+      items = [createItem(formulaData.name, formulaPerFeeding, formulaData.per100ml, 'мл')];
+      meals.push({ time: '21:00', type: 'formula', items, total: this._sumNutrients(items) });
+
+    } else if (ageInMonths < 12) {
+      // 6-12 месяцев: 5 кормлений с прикормом
+      const formulaPerFeeding = Math.round(formulaVolume / 3);
+      const mctPerMeal = mctOil > 0 ? Math.round(mctOil / 2) : 0;
+      const strictLCT = ['LCHAD', 'TFP', 'CACT', 'VLCAD_SYMPTOMATIC'].includes(effectiveForm);
+
+      // 06:00 - Смесь
+      let items = [createItem(formulaData.name, formulaPerFeeding, formulaData.per100ml, 'мл')];
+      if (breastMilkVolume > 0) {
+        items = [
+          createItem('Грудное молоко', Math.round(breastMilkVolume / 2), breastMilkData.per100ml, 'мл'),
+          createItem(formulaData.name, Math.round(formulaPerFeeding * 0.5), formulaData.per100ml, 'мл')
+        ];
+      }
+      meals.push({ time: '06:00', type: 'formula', items, total: this._sumNutrients(items) });
+
+      // 10:00 - Каша + фрукты + MCT
+      const cerealDry = 25; // г сухой каши
+      items = [
+        createItem(products.cereals.rice.name, cerealDry, products.cereals.rice.per100g),
+        createItem(products.fruits.apple.name, 50, products.fruits.apple.per100g)
+      ];
+      if (mctPerMeal > 0) {
+        items.push(createItem(products.mct.name, mctPerMeal, products.mct.per100g, 'мл'));
+      }
+      meals.push({ time: '10:00', type: 'cereal', items, total: this._sumNutrients(items) });
+
+      // 14:00 - Овощи + мясо + MCT
+      items = [
+        createItem(products.vegetables.broccoli.name, 100, products.vegetables.broccoli.per100g)
+      ];
+      if (!strictLCT) {
+        items.push(createItem(products.meat.rabbit.name, 40, products.meat.rabbit.per100g));
+      } else {
+        items.push(createItem(products.meat.rabbit.name, 20, products.meat.rabbit.per100g));
+      }
+      if (mctPerMeal > 0) {
+        items.push(createItem(products.mct.name, mctPerMeal, products.mct.per100g, 'мл'));
+      }
+      meals.push({ time: '14:00', type: 'vegetables_meat', items, total: this._sumNutrients(items) });
+
+      // 18:00 - Смесь + фрукты
+      items = [
+        createItem(formulaData.name, formulaPerFeeding, formulaData.per100ml, 'мл'),
+        createItem(products.fruits.pear.name, 60, products.fruits.pear.per100g)
+      ];
+      meals.push({ time: '18:00', type: 'formula_fruit', items, total: this._sumNutrients(items) });
+
+      // 21:00 - Смесь + крахмал (при необходимости)
+      items = [createItem(formulaData.name, formulaPerFeeding, formulaData.per100ml, 'мл')];
+      if (ageInMonths >= 8 && ['LCHAD', 'TFP', 'VLCAD'].includes(diagnosis)) {
+        const starchAmount = Math.round(weight);
+        items.push(createItem(products.cornstarch.name + ' (1:2 в воде)', starchAmount, products.cornstarch.per100g));
+      }
+      meals.push({ time: '21:00', type: 'formula', items, total: this._sumNutrients(items) });
+
+    } else {
+      // 1-3 года и старше: 5 приёмов
+      const mctPerMeal = mctOil > 0 ? Math.round(mctOil / 3) : 0;
+      const strictLCT = ['LCHAD', 'TFP', 'CACT', 'VLCAD_SYMPTOMATIC'].includes(effectiveForm);
+
+      // 07:00 - Завтрак: каша + фрукт + MCT
+      const cerealDry = 40;
+      let items = [
+        createItem(products.cereals.buckwheat.name, cerealDry, products.cereals.buckwheat.per100g),
+        createItem(products.fruits.apple.name, 80, products.fruits.apple.per100g)
+      ];
+      if (mctPerMeal > 0) {
+        items.push(createItem(products.mct.name, mctPerMeal, products.mct.per100g, 'мл'));
+      }
+      meals.push({ time: '07:00', type: 'breakfast', items, total: this._sumNutrients(items) });
+
+      // 10:00 - Перекус: смесь
+      items = [createItem(formulaData.name, Math.round(formulaVolume / 3), formulaData.per100ml, 'мл')];
+      meals.push({ time: '10:00', type: 'snack', items, total: this._sumNutrients(items) });
+
+      // 13:00 - Обед: овощи + мясо + MCT
+      items = [
+        createItem(products.vegetables.cauliflower.name, 120, products.vegetables.cauliflower.per100g),
+        createItem(products.vegetables.pumpkin.name, 50, products.vegetables.pumpkin.per100g)
+      ];
+      if (!strictLCT) {
+        items.push(createItem(products.meat.turkey.name, 60, products.meat.turkey.per100g));
+      } else {
+        items.push(createItem(products.meat.turkey.name, 30, products.meat.turkey.per100g));
+      }
+      if (mctPerMeal > 0) {
+        items.push(createItem(products.mct.name, mctPerMeal, products.mct.per100g, 'мл'));
+      }
+      meals.push({ time: '13:00', type: 'lunch', items, total: this._sumNutrients(items) });
+
+      // 16:00 - Перекус: фрукты + смесь
+      items = [
+        createItem(products.fruits.pear.name, 80, products.fruits.pear.per100g),
+        createItem(formulaData.name, Math.round(formulaVolume / 4), formulaData.per100ml, 'мл')
+      ];
+      meals.push({ time: '16:00', type: 'snack', items, total: this._sumNutrients(items) });
+
+      // 19:00 - Ужин: овощи/каша + смесь + MCT + крахмал
+      items = [
+        createItem(products.cereals.corn.name, 30, products.cereals.corn.per100g),
+        createItem(products.vegetables.kabachok.name, 100, products.vegetables.kabachok.per100g),
+        createItem(formulaData.name, Math.round(formulaVolume / 4), formulaData.per100ml, 'мл')
+      ];
+      if (mctPerMeal > 0) {
+        items.push(createItem(products.mct.name, mctPerMeal, products.mct.per100g, 'мл'));
+      }
+      if (['LCHAD', 'TFP', 'VLCAD'].includes(diagnosis)) {
+        const starchAmount = Math.round(weight);
+        items.push(createItem(products.cornstarch.name + ' (1:2 в воде)', starchAmount, products.cornstarch.per100g));
+      }
+      meals.push({ time: '19:00', type: 'dinner', items, total: this._sumNutrients(items) });
+    }
+
+    return meals;
+  }
+
+  /**
+   * Суммирование нутриентов по всем элементам
+   */
+  _sumNutrients(items) {
+    const total = { kcal: 0, protein: 0, fat: 0, carbs: 0, lct: 0 };
+    items.forEach(item => {
+      if (item.nutrients) {
+        total.kcal += item.nutrients.kcal || 0;
+        total.protein += item.nutrients.protein || 0;
+        total.fat += item.nutrients.fat || 0;
+        total.carbs += item.nutrients.carbs || 0;
+        total.lct += item.nutrients.lct || 0;
+      }
+    });
+    total.protein = Math.round(total.protein * 10) / 10;
+    total.fat = Math.round(total.fat * 10) / 10;
+    total.carbs = Math.round(total.carbs * 10) / 10;
+    total.lct = Math.round(total.lct * 10) / 10;
+    return total;
+  }
+
+  /**
+   * Подбор конкретных продуктов
+   */
+  _selectProducts(ageInMonths, diagnosis, effectiveForm) {
+    const complementary = this.data.complementaryFoods;
+    const result = {
+      vegetables: [],
+      cereals: [],
+      meat: [],
+      fruits: [],
+      avoid: []
+    };
+
+    if (ageInMonths < 4) {
+      return result; // Прикорм не вводится
+    }
+
+    // Овощи
+    result.vegetables = complementary.vegetables.products
+      .filter(p => ageInMonths >= p.ageFrom)
+      .slice(0, 5)
+      .map(p => ({
+        name: p.name,
+        brand: p.brand,
+        fat: p.per100g.lct,
+        note: `${p.per100g.kcal} ккал/100г`
+      }));
+
+    // Каши
+    result.cereals = complementary.cereals.products
+      .filter(p => ageInMonths >= p.ageFrom)
+      .slice(0, 4)
+      .map(p => ({
+        name: p.name,
+        brand: p.brand,
+        fat: p.per100gDry.lct,
+        note: p.note || `${p.per100gDry.kcal} ккал/100г сухой`
+      }));
+
+    // Мясо (только если возраст >= 6 мес и не строгое ограничение)
+    if (ageInMonths >= 6) {
+      const strictDiagnoses = ['LCHAD', 'TFP', 'VLCAD_SYMPTOMATIC', 'CACT'];
+      if (!strictDiagnoses.includes(effectiveForm)) {
+        result.meat = complementary.meat.products
+          .filter(p => ageInMonths >= p.ageFrom && p.suitable?.includes(diagnosis))
+          .slice(0, 3)
+          .map(p => ({
+            name: p.name,
+            brand: p.brand,
+            fat: p.per100g.lct,
+            note: `Жир: ${p.per100g.fat}г/100г`
+          }));
+      } else {
+        result.meat = [{
+          name: 'Мясо ограничено',
+          note: 'При строгой диете мясо вводится осторожно, минимальными порциями'
+        }];
+      }
+    }
+
+    // Фрукты
+    result.fruits = complementary.fruits.products
+      .filter(p => ageInMonths >= p.ageFrom)
+      .slice(0, 4)
+      .map(p => ({
+        name: p.name,
+        brand: p.brand,
+        note: `${p.per100g.kcal} ккал/100г`
+      }));
+
+    // Продукты, которых следует избегать
+    result.avoid = [
+      ...complementary.vegetables.avoidProducts,
+      ...complementary.cereals.avoidProducts,
+      ...complementary.meat.avoidProducts
+    ];
+
+    return result;
   }
 }
 

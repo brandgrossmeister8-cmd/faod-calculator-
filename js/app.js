@@ -95,6 +95,14 @@ async function handleSubmit(event) {
     currentResult = calculator.calculate(formData);
     console.log('Результат расчёта:', currentResult);
 
+    // Расчёт детального меню
+    const detailedMenu = calculator.calculateDetailedMenu({
+      ...formData,
+      breastfeeding: formData.isBreastfed
+    });
+    currentResult.detailedMenu = detailedMenu;
+    console.log('Детальное меню:', detailedMenu);
+
     // Отображение результатов
     displayResults(currentResult);
 
@@ -370,6 +378,11 @@ function displayResults(result) {
   // Смеси (если применимо)
   if (result.formulas && result.formulas.feedingType !== 'normal') {
     html += renderFormulas(result.formulas, result.patient.weight);
+  }
+
+  // Детальное меню по часам
+  if (result.detailedMenu) {
+    html += renderDetailedMenu(result.detailedMenu);
   }
 
   // Экстренный протокол (если криз или интеркуррентное заболевание)
@@ -726,6 +739,195 @@ function renderFormulas(formulas, weight) {
   }
 
   html += '</div>';
+  return html;
+}
+
+/**
+ * Рендеринг детального меню по часам с БЖУ
+ */
+function renderDetailedMenu(menu) {
+  if (!menu || !menu.schedule || menu.schedule.length === 0) {
+    return '';
+  }
+
+  // Рассчитываем суточные итоги
+  let dailyTotal = { kcal: 0, protein: 0, fat: 0, carbs: 0, lct: 0 };
+  menu.schedule.forEach(meal => {
+    if (meal.total) {
+      dailyTotal.kcal += meal.total.kcal || 0;
+      dailyTotal.protein += meal.total.protein || 0;
+      dailyTotal.fat += meal.total.fat || 0;
+      dailyTotal.carbs += meal.total.carbs || 0;
+      dailyTotal.lct += meal.total.lct || 0;
+    }
+  });
+
+  let html = `
+    <div class="result-block detailed-menu">
+      <h3>🍽️ Детальное меню по часам</h3>
+
+      <div class="menu-summary" style="background: var(--info-bg); padding: var(--spacing-md); border-radius: var(--radius-md); margin-bottom: var(--spacing-lg);">
+        <strong>Суточные итоги:</strong>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--spacing-sm); margin-top: var(--spacing-sm);">
+          <div><strong>${Math.round(dailyTotal.kcal)}</strong> ккал</div>
+          <div>Б: <strong>${dailyTotal.protein.toFixed(1)}</strong> г</div>
+          <div>Ж: <strong>${dailyTotal.fat.toFixed(1)}</strong> г</div>
+          <div>У: <strong>${dailyTotal.carbs.toFixed(1)}</strong> г</div>
+          <div>LCT: <strong>${dailyTotal.lct.toFixed(1)}</strong> г</div>
+        </div>
+      </div>
+  `;
+
+  // Информация о смеси
+  if (menu.formula) {
+    html += `
+      <div class="formula-info" style="margin-bottom: var(--spacing-lg); padding: var(--spacing-md); border: 1px solid var(--border); border-radius: var(--radius-md);">
+        <strong>Основная смесь:</strong> ${menu.formula.name}<br>
+        <small>Объём в сутки: ${menu.formula.volumePerDay} мл</small>
+        ${menu.formula.note ? `<br><small>${menu.formula.note}</small>` : ''}
+      </div>
+    `;
+  }
+
+  // Грудное молоко
+  if (menu.breastMilk) {
+    html += `
+      <div class="breastmilk-info" style="margin-bottom: var(--spacing-lg); padding: var(--spacing-md); background: #fff3e0; border-radius: var(--radius-md);">
+        <strong>🤱 Грудное молоко:</strong> ${menu.breastMilk.volumePerDay} мл/сут<br>
+        <small>${menu.breastMilk.note}</small>
+      </div>
+    `;
+  }
+
+  // MCT-масло
+  if (menu.mctOil) {
+    html += `
+      <div class="mct-info" style="margin-bottom: var(--spacing-lg); padding: var(--spacing-md); background: #e8f5e9; border-radius: var(--radius-md);">
+        <strong>🫒 ${menu.mctOil.product}:</strong> ${menu.mctOil.volumePerDay} мл/сут<br>
+        <small>${menu.mctOil.note}</small>
+      </div>
+    `;
+  }
+
+  // Расписание по кормлениям
+  html += '<div class="meals-schedule">';
+
+  menu.schedule.forEach((meal, index) => {
+    const mealTypeNames = {
+      'formula': 'Смесь',
+      'cereal': 'Каша',
+      'vegetables': 'Овощи',
+      'vegetables_meat': 'Обед',
+      'formula_fruit': 'Смесь + фрукты',
+      'breakfast': 'Завтрак',
+      'lunch': 'Обед',
+      'dinner': 'Ужин',
+      'snack': 'Перекус'
+    };
+
+    html += `
+      <div class="meal-block" style="margin-bottom: var(--spacing-lg); padding: var(--spacing-md); border: 1px solid var(--border); border-radius: var(--radius-md); background: ${index % 2 === 0 ? '#fafafa' : '#fff'};">
+        <div class="meal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm); padding-bottom: var(--spacing-sm); border-bottom: 1px solid var(--border);">
+          <span style="font-size: 1.2em; font-weight: bold; color: var(--primary);">
+            ⏰ ${meal.time}
+          </span>
+          <span style="background: var(--primary); color: white; padding: 2px 8px; border-radius: var(--radius-sm); font-size: 0.85em;">
+            ${mealTypeNames[meal.type] || meal.type}
+          </span>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+          <thead>
+            <tr style="background: var(--background-secondary);">
+              <th style="text-align: left; padding: 6px;">Продукт</th>
+              <th style="text-align: center; padding: 6px; width: 70px;">Кол-во</th>
+              <th style="text-align: center; padding: 6px; width: 50px;">Ккал</th>
+              <th style="text-align: center; padding: 6px; width: 45px;">Б</th>
+              <th style="text-align: center; padding: 6px; width: 45px;">Ж</th>
+              <th style="text-align: center; padding: 6px; width: 45px;">У</th>
+              <th style="text-align: center; padding: 6px; width: 45px;">LCT</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    meal.items.forEach(item => {
+      const n = item.nutrients || {};
+      html += `
+            <tr>
+              <td style="padding: 6px; border-bottom: 1px solid #eee;">${item.name}</td>
+              <td style="text-align: center; padding: 6px; border-bottom: 1px solid #eee;">${item.amount}</td>
+              <td style="text-align: center; padding: 6px; border-bottom: 1px solid #eee;">${n.kcal || 0}</td>
+              <td style="text-align: center; padding: 6px; border-bottom: 1px solid #eee;">${n.protein || 0}</td>
+              <td style="text-align: center; padding: 6px; border-bottom: 1px solid #eee;">${n.fat || 0}</td>
+              <td style="text-align: center; padding: 6px; border-bottom: 1px solid #eee;">${n.carbs || 0}</td>
+              <td style="text-align: center; padding: 6px; border-bottom: 1px solid #eee;">${n.lct || 0}</td>
+            </tr>
+      `;
+    });
+
+    // Итого по кормлению
+    if (meal.total) {
+      html += `
+            <tr style="font-weight: bold; background: #f5f5f5;">
+              <td style="padding: 6px;" colspan="2">ИТОГО:</td>
+              <td style="text-align: center; padding: 6px;">${meal.total.kcal}</td>
+              <td style="text-align: center; padding: 6px;">${meal.total.protein}</td>
+              <td style="text-align: center; padding: 6px;">${meal.total.fat}</td>
+              <td style="text-align: center; padding: 6px;">${meal.total.carbs}</td>
+              <td style="text-align: center; padding: 6px;">${meal.total.lct}</td>
+            </tr>
+      `;
+    }
+
+    html += `
+          </tbody>
+        </table>
+        ${meal.note ? `<div style="margin-top: var(--spacing-sm); font-size: 0.85em; color: #666;"><em>${meal.note}</em></div>` : ''}
+      </div>
+    `;
+  });
+
+  html += '</div>'; // meals-schedule
+
+  // Рекомендуемые продукты
+  if (menu.recommendedProducts) {
+    const rp = menu.recommendedProducts;
+
+    html += `
+      <div class="recommended-products" style="margin-top: var(--spacing-lg);">
+        <h4>📝 Рекомендуемые продукты</h4>
+    `;
+
+    if (rp.vegetables && rp.vegetables.length > 0) {
+      html += `<p><strong>Овощи:</strong> ${rp.vegetables.map(v => v.name).join(', ')}</p>`;
+    }
+    if (rp.cereals && rp.cereals.length > 0) {
+      html += `<p><strong>Каши:</strong> ${rp.cereals.map(c => c.name).join(', ')}</p>`;
+    }
+    if (rp.fruits && rp.fruits.length > 0) {
+      html += `<p><strong>Фрукты:</strong> ${rp.fruits.map(f => f.name).join(', ')}</p>`;
+    }
+    if (rp.meat && rp.meat.length > 0) {
+      html += `<p><strong>Мясо:</strong> ${rp.meat.map(m => m.name + (m.note ? ` (${m.note})` : '')).join(', ')}</p>`;
+    }
+
+    if (rp.avoid && rp.avoid.length > 0) {
+      html += `
+        <div class="alert alert-danger" style="margin-top: var(--spacing-md);">
+          <strong>❌ Избегать:</strong>
+          <ul style="margin: var(--spacing-xs) 0 0 20px;">
+            ${rp.avoid.map(a => `<li>${a.name} — ${a.reason}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
+    html += '</div>';
+  }
+
+  html += '</div>'; // result-block
+
   return html;
 }
 
