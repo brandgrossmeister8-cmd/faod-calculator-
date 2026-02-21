@@ -100,9 +100,11 @@
         {
           "id": "CPT2_LATE_MUSCULAR",
           "name": "Поздняя мышечная форма",
-          "description": "Манифестация на 2-3 десятилетии жизни, миалгия, рабдомиолиз",
+          "description": "Манифестация в 6-20 лет, чаще подростковый возраст. Миалгия, рабдомиолиз при физ. нагрузке, голодании, инфекциях",
           "severity": "mild",
-          "dietType": "moderate"
+          "dietType": "moderate",
+          "ageOnset": "6-20 лет",
+          "triggers": ["физическая нагрузка", "голодание", "инфекции", "холод", "общая анестезия"]
         }
       ],
       "description": "Три клинические формы с разной тяжестью. Поздняя форма — самая частая причина наследственной миоглобинурии.",
@@ -176,21 +178,47 @@
       "carnitineIVContraindicatedReason": "Риск аритмии при накоплении длинноцепочечных ацилкарнитинов",
       "clinicalForms": [
         {
+          "id": "VLCAD_CARDIAC",
+          "name": "Тяжёлая кардиомиопатическая форма",
+          "description": "Неонатальная/ранняя манифестация с кардиомиопатией, аритмией",
+          "severity": "severe",
+          "dietType": "strict",
+          "ageOnset": "0-3 мес"
+        },
+        {
+          "id": "VLCAD_HEPATIC",
+          "name": "Гепато-гипогликемическая форма",
+          "description": "Младенческая форма с гипогликемией, гепатомегалией без кардиомиопатии",
+          "severity": "moderate",
+          "dietType": "strict",
+          "ageOnset": "3-24 мес"
+        },
+        {
+          "id": "VLCAD_MYOPATHIC",
+          "name": "Поздняя миопатическая форма",
+          "description": "Рабдомиолиз, миалгии при физической нагрузке, голодании, инфекциях",
+          "severity": "mild",
+          "dietType": "moderate",
+          "ageOnset": "подростковый/взрослый возраст",
+          "triggers": ["физическая нагрузка", "голодание", "инфекции", "холод"]
+        },
+        {
           "id": "VLCAD_ASYMPTOMATIC",
           "name": "Бессимптомная форма",
-          "description": "Выявлена при скрининге, КФК/АЛТ/АСТ в норме",
+          "description": "Выявлена при неонатальном скрининге, КФК/АЛТ/АСТ в норме",
           "severity": "mild",
           "dietType": "moderate"
         },
         {
           "id": "VLCAD_SYMPTOMATIC",
-          "name": "Симптоматическая форма с ранней манифестацией",
-          "description": "Кардиомиопатия, гипогликемия, поражение печени",
+          "name": "Симптоматическая форма (неуточнённая)",
+          "description": "Симптоматическая форма без уточнения типа",
           "severity": "severe",
-          "dietType": "strict"
+          "dietType": "strict",
+          "note": "Рекомендуется уточнить тип: кардиальная, печёночная или миопатическая"
         }
       ],
-      "description": "Гетерогенное заболевание. Бессимптомная форма требует умеренного ограничения, симптоматическая — строгого.",
+      "description": "Гетерогенное заболевание с 4 фенотипами: кардиальный (тяжёлый), гепато-гипогликемический (самый частый), миопатический и бессимптомный.",
       "mainSymptoms": ["кардиомиопатия", "гипогликемия", "миопатия", "рабдомиолиз"]
     },
     {
@@ -232,9 +260,13 @@
       "mctContraindicated": false,
       "requiresDHA": true,
       "dhaDose": {
-        "underWeight20kg": 60,
-        "overWeight20kg": 130,
-        "unit": "мг/сут"
+        "infants0to6m": { "min": 60, "max": 100, "recommended": 65 },
+        "infants6to12m": { "min": 80, "max": 130, "recommended": 100 },
+        "children1to3y": { "min": 100, "max": 150, "recommended": 130 },
+        "children3to10y": { "min": 150, "max": 250, "recommended": 200 },
+        "adolescentsAdults": { "min": 200, "max": 500, "recommended": 250 },
+        "unit": "мг/сут",
+        "note": "Критически важно для профилактики ретинопатии и периферической нейропатии"
       },
       "carnitineRequired": false,
       "carnitineContraindicated": true,
@@ -262,9 +294,13 @@
       "mctContraindicated": false,
       "requiresDHA": true,
       "dhaDose": {
-        "underWeight20kg": 60,
-        "overWeight20kg": 130,
-        "unit": "мг/сут"
+        "infants0to6m": { "min": 60, "max": 100, "recommended": 65 },
+        "infants6to12m": { "min": 80, "max": 130, "recommended": 100 },
+        "children1to3y": { "min": 100, "max": 150, "recommended": 130 },
+        "children3to10y": { "min": 150, "max": 250, "recommended": 200 },
+        "adolescentsAdults": { "min": 200, "max": 500, "recommended": 250 },
+        "unit": "мг/сут",
+        "note": "Критически важно для профилактики ретинопатии и периферической нейропатии"
       },
       "carnitineRequired": false,
       "carnitineContraindicated": true,

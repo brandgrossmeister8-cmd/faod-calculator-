@@ -94,19 +94,46 @@
     "VLCAD": {
       "hasMultipleForms": true,
       "forms": {
+        "VLCAD_CARDIAC": {
+          "dietDescription": "Строгое ограничение LCT, максимальное MCT (кардиальная форма)",
+          "fatPercent": { "min": 25, "max": 30, "recommended": 30 },
+          "mctPercent": { "min": 22, "max": 27, "recommended": 25 },
+          "lctPercent": { "min": 3, "max": 5, "recommended": 5 },
+          "carbsPercent": { "min": 60, "max": 65, "recommended": 60 },
+          "proteinPercent": { "min": 10, "max": 12, "recommended": 10 },
+          "warnings": ["Критически важно избегать голодания", "Мониторинг ЭхоКГ каждые 3-6 мес"]
+        },
+        "VLCAD_HEPATIC": {
+          "dietDescription": "Строгое ограничение LCT, высокое MCT (гепато-гипогликемическая форма)",
+          "fatPercent": { "min": 25, "max": 30, "recommended": 30 },
+          "mctPercent": { "min": 20, "max": 25, "recommended": 22 },
+          "lctPercent": { "min": 5, "max": 8, "recommended": 8 },
+          "carbsPercent": { "min": 60, "max": 65, "recommended": 60 },
+          "proteinPercent": { "min": 10, "max": 12, "recommended": 10 },
+          "warnings": ["Частые кормления", "Крахмал на ночь с 8-12 мес"]
+        },
+        "VLCAD_MYOPATHIC": {
+          "dietDescription": "Умеренное ограничение жиров, MCT перед нагрузкой (миопатическая форма)",
+          "fatPercent": { "min": 25, "max": 30, "recommended": 28 },
+          "mctPercent": { "min": 10, "max": 15, "recommended": 12 },
+          "lctPercent": { "min": 13, "max": 18, "recommended": 16 },
+          "carbsPercent": { "min": 55, "max": 65, "recommended": 62 },
+          "proteinPercent": { "min": 10, "max": 12, "recommended": 10 },
+          "warnings": ["MCT + углеводы перед физической нагрузкой", "Избегать голодания > 8-10 ч"]
+        },
         "VLCAD_ASYMPTOMATIC": {
-          "dietDescription": "Умеренное ограничение жиров, обогащение MCT",
+          "dietDescription": "Умеренное ограничение жиров, обогащение MCT (бессимптомная форма)",
           "fatPercent": { "min": 30, "max": 40, "recommended": 35 },
           "mctPercent": { "min": 10, "max": 15, "recommended": 12 },
-          "lctPercent": { "min": 15, "max": 25, "recommended": 23 },
+          "lctPercent": { "min": 18, "max": 25, "recommended": 23 },
           "carbsPercent": { "min": 50, "max": 60, "recommended": 55 },
           "proteinPercent": { "min": 10, "max": 15, "recommended": 10 }
         },
         "VLCAD_SYMPTOMATIC": {
-          "dietDescription": "Строгое ограничение LCT, высокое MCT",
+          "dietDescription": "Строгое ограничение LCT, высокое MCT (симптоматическая, неуточн.)",
           "fatPercent": { "min": 25, "max": 30, "recommended": 30 },
-          "mctPercent": { "min": 20, "max": 25, "recommended": 20 },
-          "lctPercent": { "min": 5, "max": 10, "recommended": 10 },
+          "mctPercent": { "min": 20, "max": 25, "recommended": 22 },
+          "lctPercent": { "min": 5, "max": 8, "recommended": 8 },
           "carbsPercent": { "min": 60, "max": 65, "recommended": 60 },
           "proteinPercent": { "min": 10, "max": 15, "recommended": 10 }
         }
@@ -161,15 +188,15 @@
   "infantFeeding": {
     "description": "Особенности вскармливания детей до 4 месяцев",
     "fullFormulaRequired": {
-      "diagnoses": ["LCHAD", "TFP", "VLCAD_SYMPTOMATIC", "CACT", "CPT2_NEONATAL", "CPT2_INFANTILE"],
+      "diagnoses": ["LCHAD", "TFP", "VLCAD_SYMPTOMATIC", "VLCAD_CARDIAC", "VLCAD_HEPATIC", "CACT", "CPT2_NEONATAL", "CPT2_INFANTILE", "GA2", "GA2_SEVERE_NEONATAL", "GA2_SEVERE_NEONATAL_ANOMALIES"],
       "description": "100% специализированная низкожировая смесь"
     },
     "mixedFeeding": {
-      "diagnoses": ["VLCAD_ASYMPTOMATIC"],
+      "diagnoses": ["VLCAD_ASYMPTOMATIC", "VLCAD_MYOPATHIC", "CPT1", "SCHAD"],
       "description": "50% грудное молоко/смесь + 50% специализированная смесь"
     },
     "normalFeeding": {
-      "diagnoses": ["OCTN2", "SCAD", "MCAD"],
+      "diagnoses": ["OCTN2", "SCAD", "MCAD", "CPT2_LATE_MUSCULAR", "GA2_MILD_LATE", "GA2_RIBOFLAVIN_RESPONSIVE"],
       "description": "Грудное вскармливание или обычная смесь"
     }
   },

@@ -783,6 +783,7 @@ class FAODCalculator {
     const result = {
       recommended: [],
       feedingType: null,
+      feedingDescription: null,
       volumeMLPerKg: null,
       mixedFeeding: null
     };
@@ -790,17 +791,20 @@ class FAODCalculator {
     // Определение типа вскармливания
     const infantFeeding = this.data.macroRatios.infantFeeding;
 
-    if (infantFeeding.fullFormulaRequired.diagnoses.includes(effectiveForm)) {
+    if (infantFeeding.fullFormulaRequired.diagnoses.includes(effectiveForm) ||
+        infantFeeding.fullFormulaRequired.diagnoses.includes(diagnosis)) {
       result.feedingType = 'full_formula';
       result.feedingDescription = '100% специализированная смесь';
-    } else if (infantFeeding.mixedFeeding.diagnoses.includes(effectiveForm)) {
+    } else if (infantFeeding.mixedFeeding.diagnoses.includes(effectiveForm) ||
+               infantFeeding.mixedFeeding.diagnoses.includes(diagnosis)) {
       result.feedingType = 'mixed';
       result.feedingDescription = '50% грудное молоко + 50% специализированная смесь';
       result.mixedFeeding = {
         breastMilkPercent: 50,
         formulaPercent: 50
       };
-    } else if (infantFeeding.normalFeeding.diagnoses.includes(effectiveForm)) {
+    } else if (infantFeeding.normalFeeding.diagnoses.includes(effectiveForm) ||
+               infantFeeding.normalFeeding.diagnoses.includes(diagnosis)) {
       result.feedingType = 'normal';
       result.feedingDescription = 'Грудное молоко или стандартная смесь';
 
@@ -810,6 +814,21 @@ class FAODCalculator {
       }
 
       return result;
+    } else {
+      // Fallback: определяем по requiresDiet диагноза
+      const diagInfo = this.data.diagnoses.diagnoses[diagnosis];
+      if (diagInfo?.requiresDiet && diagInfo?.dietType === 'strict') {
+        result.feedingType = 'full_formula';
+        result.feedingDescription = '100% специализированная смесь (по умолчанию)';
+      } else if (diagInfo?.requiresDiet) {
+        result.feedingType = 'mixed';
+        result.feedingDescription = 'Смешанное вскармливание (рекомендуется консультация)';
+        result.mixedFeeding = { breastMilkPercent: 50, formulaPercent: 50 };
+      } else {
+        result.feedingType = 'normal';
+        result.feedingDescription = 'Грудное молоко или стандартная смесь';
+        return result;
+      }
     }
 
     // Объём смеси

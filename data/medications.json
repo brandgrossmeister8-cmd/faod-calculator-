@@ -212,29 +212,56 @@
 
   "coq10": {
     "description": "Коэнзим Q10 (убихинон)",
-    "tradenames": ["Кудесан", "CoQ10"],
-    "forms": ["капсулы", "капли"],
+    "tradenames": ["Кудесан", "CoQ10", "Убихинон"],
+    "forms": ["капсулы", "капли", "раствор"],
 
     "indications": {
-      "optional": {
-        "diagnoses": ["GA2", "VLCAD", "LCHAD", "TFP"],
-        "description": "Антиоксидантная поддержка, улучшение митохондриальной функции"
+      "required": {
+        "diagnoses": ["GA2"],
+        "description": "Обязательно при GA2 (особенно мутации ETFDH). Улучшает перенос электронов в митохондриях."
+      },
+      "recommended": {
+        "diagnoses": ["VLCAD", "LCHAD", "TFP"],
+        "description": "Рекомендуется как антиоксидантная поддержка"
       }
     },
 
     "dosing": {
-      "children": {
-        "doseMin": 5,
-        "doseMax": 15,
-        "unit": "мг/кг/сут",
-        "maxDailyDose": 300,
-        "maxUnit": "мг/сут"
+      "GA2": {
+        "children": {
+          "doseMin": 10,
+          "doseMax": 30,
+          "unit": "мг/кг/сут",
+          "maxDailyDose": 400,
+          "maxUnit": "мг/сут",
+          "note": "Высокие дозы при ETFDH мутациях"
+        },
+        "adults": {
+          "doseMin": 200,
+          "doseMax": 600,
+          "unit": "мг/сут",
+          "note": "Может потребоваться до 1000 мг/сут при тяжёлых формах"
+        }
       },
-      "adults": {
-        "doseMin": 100,
-        "doseMax": 300,
-        "unit": "мг/сут"
+      "supportive": {
+        "children": {
+          "doseMin": 5,
+          "doseMax": 15,
+          "unit": "мг/кг/сут",
+          "maxDailyDose": 300,
+          "maxUnit": "мг/сут"
+        },
+        "adults": {
+          "doseMin": 100,
+          "doseMax": 300,
+          "unit": "мг/сут"
+        }
       }
+    },
+
+    "monitoring": {
+      "parameters": ["клинический ответ", "мышечная сила", "креатинкиназа"],
+      "note": "Оценить ответ через 4-8 недель терапии"
     }
   },
 
